@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Global Shipping Logistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f7fa; }
+        .whatsapp-float { position: fixed; bottom: 20px; right: 20px; background: #25D366; color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; text-decoration: none; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: transform 0.3s; }
+        .whatsapp-float:hover { transform: scale(1.1); }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo i { font-size: 28px; color: #007bff; }
+        .logo h1 { font-size: 22px; font-weight: 700; }
+        .logo span { color: #007bff; }
+        nav ul { display: flex; list-style: none; gap: 30px; }
+        nav ul li a { text-decoration: none; color: #333; font-weight: 500; transition: color 0.3s; }
+        nav ul li a:hover { color: #007bff; }
+        .admin-section { padding: 40px 20px; max-width: 1400px; margin: 0 auto; }
+        .admin-section h2 { text-align: center; margin-bottom: 30px; font-size: 32px; }
+        .tab-buttons { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .tab-btn { background: #6c757d; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; transition: all 0.3s; }
+        .tab-btn:hover { background: #5a6268; transform: translateY(-2px); }
+        .tab-btn.active { background: #007bff; }
+        .admin-box { max-width: 700px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .admin-box h3 { margin-bottom: 20px; text-align: center; }
+        .admin-box input, .admin-box select, .admin-box textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .btn { background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; width: 100%; margin-top: 10px; transition: background 0.3s; }
+        .btn:hover { background: #0056b3; }
+        .form-section { background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .form-section h4 { margin-bottom: 15px; color: #007bff; }
+        .required-star { color: red; margin-left: 4px; }
+        .admin-table { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 13px; }
+        th { background: #007bff; color: white; font-weight: 600; }
+        .delete-btn { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .conversation-item { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s; }
+        .conversation-item:hover { background: #f0f0f0; }
+        footer { background: #1a1a2e; color: white; text-align: center; padding: 20px; margin-top: 40px; }
+        @media (max-width: 768px) { nav { flex-direction: column; gap: 15px; padding: 15px 20px; } nav ul { gap: 15px; } }
+    </style>
+</head>
+<body>
+    <a href="https://wa.me/972532608846" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <nav>
+        <div class="logo"><i class="fas fa-shipping-fast"></i><h1>Global Shipping<span> Logistics</span></h1></div>
+        <ul><li><a href="index.html">Home</a></li><li><a href="track.html">Track Shipment</a></li><li><a href="admin.html">Admin</a></li></ul>
+    </nav>
+    <section class="admin-section">
+        <h2>Admin Dashboard</h2>
+        <div class="tab-buttons">
+            <button class="tab-btn active" data-tab="register">📦 Register Package</button>
+            <button class="tab-btn" data-tab="update">🔄 Update Status</button>
+            <button class="tab-btn" data-tab="chats">💬 Customer Chats</button>
+            <button class="tab-btn" data-tab="all">📋 All Shipments</button>
+        </div>
+
+        <!-- Register Package Tab -->
+        <div id="registerTab" class="admin-box">
+            <h3>Register New Package</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="regTrackingNumber" placeholder="Tracking Number *" style="flex:1;">
+                <button type="button" onclick="generateTrackingNumber()" style="width: auto; background: #28a745; color: white; border: none; padding: 0 15px; border-radius: 6px;">Generate</button>
+            </div>
+
+            <div class="form-section">
+                <h4>📤 Sender Information <span class="required-star">*</span></h4>
+                <input type="text" id="regSenderName" placeholder="Sender Full Name *">
+                <input type="text" id="regSenderAddress" placeholder="Sender Address *">
+                <input type="text" id="regSenderPhone" placeholder="Sender Phone Number *">
+                <input type="email" id="regSenderEmail" placeholder="Sender Email (optional)">
+                <input type="text" id="regOrigin" placeholder="Origin Country (e.g., Lebanon)">
+            </div>
+
+            <div class="form-section">
+                <h4>📥 Receiver Information <span class="required-star">*</span></h4>
+                <input type="text" id="regCustomerName" placeholder="Customer Full Name *">
+                <input type="email" id="regCustomerEmail" placeholder="Customer Email *">
+                <input type="text" id="regAddress" placeholder="Delivery Address *">
+                <input type="text" id="regCustomerPhone" placeholder="Customer Mobile Number">
+                <input type="text" id="regDestination" placeholder="Destination (e.g., Melbourne, Australia)">
+            </div>
+
+            <div class="form-section">
+                <h4>📦 Shipment Details</h4>
+                <select id="regStatus">
+                    <option value="Processing">Processing</option>
+                    <option value="In Transit">In Transit</option>
+                    <option value="On Hold">On Hold</option>
+                    <option value="Delivering">Delivering</option>
+                    <option value="Delivered">Delivered</option>
+                </select>
+                <input type="text" id="regCurrentLocation" placeholder="Current Location">
+                <input type="text" id="regCountry" placeholder="Destination Country">
+                <input type="text" id="regEstimatedDelivery" placeholder="Estimated Delivery (e.g., June 30, 2026)">
+                <input type="text" id="regPackageDesc" placeholder="Package Description" value="Standard Package">
+                <input type="text" id="regDeliveryTime" placeholder="Delivery Time" value="24/48HRS">
+                <input type="text" id="regTimeFrame" placeholder="Time Frame" value="Express">
+            </div>
+
+            <div class="form-section">
+                <h4>💰 Payment <span class="required-star">*</span></h4>
+                <input type="number" id="regShippingFee" placeholder="Shipping Fee (USD) *" step="0.01" value="5000">
+                <input type="number" id="regAmount" placeholder="Package Amount (USD) *" step="0.01">
+            </div>
+            <button class="btn" onclick="registerPackage()">✅ Register Package</button>
+        </div>
+
+        <!-- Update Status Tab -->
+        <div id="updateTab" class="admin-box" style="display: none;">
+            <h3>Update Package Status</h3>
+            <input type="text" id="updateTrackingNumber" placeholder="Tracking Number">
+            <select id="updateStatus">
+                <option value="Processing">Processing</option>
+                <option value="In Transit">In Transit</option>
+                <option value="On Hold">On Hold</option>
+                <option value="Delivering">Delivering</option>
+                <option value="Delivered">Delivered</option>
+            </select>
+            <input type="text" id="updateLocation" placeholder="Current Location">
+            <button class="btn" onclick="updateStatus()">Update Status</button>
+        </div>
+
+        <!-- Customer Chats Tab -->
+        <div id="chatsTab" class="admin-box" style="display: none; max-width: 1000px;">
+            <h3>Customer Conversations</h3>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 250px; max-height: 500px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; background: white; padding: 10px;">
+                    <div id="conversationsList">Loading conversations...</div>
+                </div>
+                <div style="flex: 2; min-width: 300px; border: 1px solid #ddd; border-radius: 8px; background: white; padding: 15px;">
+                    <div id="conversationThread" style="max-height: 350px; overflow-y: auto; margin-bottom: 15px;">Select a conversation</div>
+                    <textarea id="adminReplyText" rows="3" placeholder="Type your reply..."></textarea>
+                    <button class="btn" onclick="sendAdminReply()" style="margin-top: 10px;">Send Reply</button>
+                    <input type="hidden" id="replyCustomerName">
+                    <input type="hidden" id="replyCustomerEmail">
+                </div>
+            </div>
+        </div>
+
+        <!-- All Shipments Tab -->
+        <div id="allTab" class="admin-table" style="display: none;">
+            <h3>All Shipments</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr><th>Tracking</th><th>Customer</th><th>Email</th><th>Status</th><th>Location</th><th>Country</th><th>Amount</th><th>Shipping Fee</th><th>Total</th><th>Est. Delivery</th><th>Action</th></tr>
+                    </thead>
+                    <tbody id="shipmentsTableBody"><tr><td colspan="11">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <p>📧 globalshippinglogistics@gmail.com | WhatsApp: +972532608846</p>
+        <p>© 2025 Global Shipping Logistics</p>
+    </footer>
+    <script src="script.js"></script>
+    <script>
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const tab = this.getAttribute('data-tab');
+                document.getElementById('registerTab').style.display = 'none';
+                document.getElementById('updateTab').style.display = 'none';
+                document.getElementById('chatsTab').style.display = 'none';
+                document.getElementById('allTab').style.display = 'none';
+                if (tab === 'register') document.getElementById('registerTab').style.display = 'block';
+                else if (tab === 'update') document.getElementById('updateTab').style.display = 'block';
+                else if (tab === 'chats') { document.getElementById('chatsTab').style.display = 'block'; if (typeof loadConversations === 'function') loadConversations(); }
+                else if (tab === 'all') { document.getElementById('allTab').style.display = 'block'; if (typeof loadShipments === 'function') loadShipments(); }
+            });
+        });
+    </script>
+</body>
+</html>

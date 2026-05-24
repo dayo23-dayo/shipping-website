@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Receipt - Global Shipping Logistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #e0e0e0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 20px; }
+        .receipt { max-width: 500px; width: 100%; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 30px 20px; text-align: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; }
+        .header .logo { font-size: 14px; letter-spacing: 3px; opacity: 0.8; margin-bottom: 10px; }
+        .header h1 { font-size: 28px; font-weight: 800; margin-bottom: 5px; }
+        .header h2 { font-size: 18px; font-weight: 400; opacity: 0.9; }
+        .tagline { background: #f5a623; color: #1a1a2e; text-align: center; padding: 12px; font-weight: bold; font-size: 18px; letter-spacing: 2px; }
+        .content { padding: 25px; }
+        .tracking-row { background: #f0f0f0; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 600; }
+        .section-title { font-weight: 800; font-size: 16px; color: #1a1a2e; border-left: 4px solid #f5a623; padding-left: 10px; margin-bottom: 15px; }
+        .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; }
+        .row .label { font-size: 13px; color: #666; font-weight: 500; }
+        .row .value { font-size: 13px; color: #333; font-weight: 600; }
+        .delivery-box { background: #f8f9fa; border-radius: 12px; padding: 15px; margin: 15px 0; }
+        .delivery-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+        .totals { margin-top: 15px; padding-top: 15px; border-top: 2px solid #1a1a2e; }
+        .total-row { display: flex; justify-content: space-between; padding: 8px 0; font-weight: bold; }
+        .grand-total { background: #1a1a2e; color: white; padding: 12px; border-radius: 10px; display: flex; justify-content: space-between; margin-top: 15px; font-weight: bold; }
+        .footer { background: #f5f5f5; padding: 15px; text-align: center; font-size: 10px; color: #888; }
+        .buttons { display: flex; gap: 15px; padding: 20px; background: white; max-width: 500px; margin: 10px auto 0; border-radius: 0 0 20px 20px; }
+        .print-btn, .close-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .print-btn { background: #1a1a2e; color: white; }
+        .print-btn:hover { background: #f5a623; color: #1a1a2e; }
+        .close-btn { background: #e0e0e0; color: #333; }
+        @media print { body { background: white; } .buttons { display: none; } .receipt { box-shadow: none; } }
+    </style>
+</head>
+<body>
+<div class="receipt">
+    <div class="header"><div class="logo">WE KNOW</div><h1>WE CAN DELIVER...</h1><h2>Express Delivery Services</h2></div>
+    <div class="tagline">★ Trusted International Shipping ★</div>
+    <div class="content">
+        <div class="tracking-row"><span>🔖 TRACKING NUMBER:</span><strong id="trackingNumber">GSL000000</strong></div>
+        <div class="section"><div class="section-title">RECEIVERS DETAILS:</div>
+            <div class="row"><span class="label">Name:</span><span class="value" id="receiverName">_________</span></div>
+            <div class="row"><span class="label">Address To Delivery:</span><span class="value" id="receiverAddress">_________</span></div>
+            <div class="row"><span class="label">Mobile NO.:</span><span class="value" id="receiverPhone">_________</span></div>
+        </div>
+        <div class="delivery-box">
+            <div class="section-title" style="margin-bottom:10px;">DELIVERY DESCRIPTION</div>
+            <div class="delivery-row"><span>Black Box</span><span id="packageDesc">Standard Package</span></div>
+            <div class="delivery-row"><span>24/48HRS</span><span id="deliveryTime">24/48HRS</span></div>
+            <div class="delivery-row"><span>TIME</span><span id="timeFrame">Express</span></div>
+            <div class="delivery-row"><span>RATE</span><span id="rate">6.0%</span></div>
+            <div class="delivery-row"><span>DISCOUNT</span><span id="discount">$0</span></div>
+        </div>
+        <div class="section"><div class="section-title">PAYEE DETAILS:</div>
+            <div class="row"><span class="label">Name:</span><span class="value" id="payeeName">_________</span></div>
+            <div class="row"><span class="label">Address:</span><span class="value" id="payeeAddress">_________</span></div>
+        </div>
+        <div class="totals">
+            <div class="total-row"><span>Amount in Details:</span><span id="amountDetails">$0</span></div>
+            <div class="total-row"><span>Shipping fee:</span><span id="shippingFee">$5000</span></div>
+            <div class="grand-total"><span>TOTAL:</span><span id="totalAmount">$0</span></div>
+        </div>
+    </div>
+    <div class="footer">Thank you for choosing Global Shipping Logistics<br>📧 globalshippinglogistics@gmail.com | 📱 WhatsApp: +972532608846</div>
+</div>
+<div class="buttons"><button class="print-btn" onclick="window.print()">🖨️ PRINT RECEIPT</button><button class="close-btn" onclick="window.close()">CLOSE</button></div>
+<script>
+    const p = new URLSearchParams(window.location.search);
+    document.getElementById('trackingNumber').innerText = p.get('tracking') || 'GSL000000';
+    document.getElementById('receiverName').innerText = p.get('customerName') || '_________';
+    document.getElementById('receiverAddress').innerText = p.get('customerAddress') || '_________';
+    document.getElementById('receiverPhone').innerText = p.get('customerPhone') || '_________';
+    document.getElementById('payeeName').innerText = p.get('senderName') || '_________';
+    document.getElementById('payeeAddress').innerText = p.get('senderAddress') || '_________';
+    document.getElementById('packageDesc').innerText = p.get('packageDesc') || 'Standard Package';
+    document.getElementById('deliveryTime').innerText = p.get('deliveryTime') || '24/48HRS';
+    document.getElementById('timeFrame').innerText = p.get('timeFrame') || 'Express';
+    const amount = parseFloat(p.get('amount')) || 0;
+    const shipping = parseFloat(p.get('shippingFee')) || 5000;
+    document.getElementById('amountDetails').innerText = `$${amount.toFixed(2)}`;
+    document.getElementById('shippingFee').innerText = `$${shipping.toFixed(2)}`;
+    document.getElementById('totalAmount').innerText = `$${(amount + shipping).toFixed(2)}`;
+</script>
+</body>
+</html>
