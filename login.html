@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Global Shipping Logistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('logistics-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h2 { margin-bottom: 10px; color: #1a1a2e; }
+        p { color: #666; font-size: 14px; margin-bottom: 25px; }
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { background: #0056b3; }
+        .error { color: #dc3545; margin-top: 15px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2>🔐 Admin Access</h2>
+        <p>Enter the admin password to continue</p>
+        <form id="loginForm">
+            <input type="password" id="password" placeholder="Password" autofocus>
+            <button type="submit">Login</button>
+            <div id="errorMsg" class="error"></div>
+        </form>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const entered = document.getElementById('password').value;
+            // CHANGE THIS PASSWORD to your own (keep it secret)
+            const correctPassword = "admin123";
+            if (entered === correctPassword) {
+                sessionStorage.setItem('adminAuthenticated', 'true');
+                window.location.href = 'admin.html';
+            } else {
+                document.getElementById('errorMsg').innerText = '❌ Incorrect password. Access denied.';
+            }
+        });
+    </script>
+</body>
+</html>

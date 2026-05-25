@@ -46,6 +46,11 @@
     </style>
 </head>
 <body>
+    <script>
+    if (!sessionStorage.getItem('adminAuthenticated')) {
+        window.location.href = 'login.html';
+    }
+</script>
     <a href="https://wa.me/972532608846" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
     <nav>
         <div class="logo"><i class="fas fa-shipping-fast"></i><h1>Global Shipping<span> Logistics</span></h1></div>
