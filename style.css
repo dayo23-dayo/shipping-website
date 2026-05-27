@@ -129,11 +129,15 @@ nav {
 }
 
 .logo img {
-    height: 45px;
+    height: 60px;
     width: auto;
-    object-fit: contain;
 }
 
+@media (max-width: 768px) {
+    .logo img {
+        height: 45px;
+    }
+}
 .logo h1 {
     font-size: 24px;
 }
