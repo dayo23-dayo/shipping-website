@@ -71,14 +71,45 @@ async function loadChatHistory() {
 }
 
 // ========== TRACKING NUMBER GENERATOR ==========
+// This generates sequential tracking numbers like GSL-2026-000001
+let lastTrackingNumber = null;
+
+async function getNextTrackingNumber() {
+    try {
+        // Fetch existing shipments to find the last tracking number
+        const response = await fetch('/api/shipments');
+        const shipments = await response.json();
+        
+        let maxNum = 0;
+        for (const shipment of shipments) {
+            if (shipment.trackingNumber) {
+                // Extract the numeric part from tracking numbers like GSL-2026-000019
+                const match = shipment.trackingNumber.match(/GSL-\d{4}-(\d+)/);
+                if (match) {
+                    const num = parseInt(match[1], 10);
+                    if (num > maxNum) maxNum = num;
+                }
+            }
+        }
+        
+        const nextNum = maxNum + 1;
+        const year = new Date().getFullYear();
+        const paddedNum = nextNum.toString().padStart(6, '0');
+        return `GSL-${year}-${paddedNum}`;
+        
+    } catch (error) {
+        console.error('Error generating tracking number:', error);
+        // Fallback: use timestamp
+        const year = new Date().getFullYear();
+        const timestamp = Date.now().toString().slice(-6);
+        return `GSL-${year}-${timestamp}`;
+    }
+}
+
 function generateTrackingNumber() {
-    const prefix = "GSL";
-    const date = new Date();
-    const yy = String(date.getFullYear()).slice(-2);
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    document.getElementById('regTrackingNumber').value = `${prefix}${yy}${mm}${dd}${random}`;
+    getNextTrackingNumber().then(trackingNum => {
+        document.getElementById('regTrackingNumber').value = trackingNum;
+    });
 }
 
 // ========== ADMIN REGISTRATION ==========
