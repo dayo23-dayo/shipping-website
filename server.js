@@ -3,7 +3,7 @@ const cors = require('cors');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -13,20 +13,20 @@ app.use(express.static('.'));
 const SHIPMENTS_FILE = 'shipments.json';
 const CHAT_FILE = 'messages.json';
 
-// Initialize files
 if (!fs.existsSync(SHIPMENTS_FILE)) fs.writeFileSync(SHIPMENTS_FILE, JSON.stringify([], null, 2));
 if (!fs.existsSync(CHAT_FILE)) fs.writeFileSync(CHAT_FILE, JSON.stringify([], null, 2));
 
-// Helper functions
-const readShipments = () => JSON.parse(fs.readFileSync(SHIPMENTS_FILE));
+const readShipments = () => {
+    try { return JSON.parse(fs.readFileSync(SHIPMENTS_FILE)); } catch(e) { return []; }
+};
 const writeShipments = (data) => fs.writeFileSync(SHIPMENTS_FILE, JSON.stringify(data, null, 2));
-const readMessages = () => JSON.parse(fs.readFileSync(CHAT_FILE));
+const readMessages = () => {
+    try { return JSON.parse(fs.readFileSync(CHAT_FILE)); } catch(e) { return []; }
+};
 const writeMessages = (data) => fs.writeFileSync(CHAT_FILE, JSON.stringify(data, null, 2));
 
 // ========== SHIPMENT APIs ==========
-app.get('/api/shipments', (req, res) => {
-    res.json(readShipments());
-});
+app.get('/api/shipments', (req, res) => res.json(readShipments()));
 
 app.get('/api/track/:trackingNumber', (req, res) => {
     const shipments = readShipments();
@@ -63,9 +63,7 @@ app.delete('/api/shipments/:trackingNumber', (req, res) => {
     res.json({ success: true });
 });
 
-// ========== CHAT APIs (with customerEmail saved) ==========
-
-// Get all conversations grouped by customer email
+// ========== CHAT APIs ==========
 app.get('/api/conversations', (req, res) => {
     const messages = readMessages();
     const conversations = {};
@@ -73,35 +71,25 @@ app.get('/api/conversations', (req, res) => {
         const email = msg.customerEmail;
         if (!email) return;
         if (!conversations[email]) {
-            conversations[email] = {
-                customerEmail: email,
-                customerName: msg.customerName || 'Anonymous',
-                messages: []
-            };
+            conversations[email] = { customerEmail: email, customerName: msg.customerName, messages: [] };
         }
         conversations[email].messages.push(msg);
     });
-    // Sort messages within each conversation by timestamp
-    for (let email in conversations) {
-        conversations[email].messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-    }
     res.json(Object.values(conversations));
 });
 
-// Get all messages for a specific customer
 app.get('/api/chat/:customerEmail', (req, res) => {
     const messages = readMessages();
     const customerMessages = messages.filter(m => m.customerEmail === req.params.customerEmail);
-    customerMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    customerMessages.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
     res.json(customerMessages);
 });
 
-// Customer sends a new message
 app.post('/api/chat', (req, res) => {
     const messages = readMessages();
     const { customerEmail, customerName, message } = req.body;
     if (!customerEmail || !message) {
-        return res.status(400).json({ error: 'Email and message are required' });
+        return res.status(400).json({ error: 'Email and message required' });
     }
     const newMsg = {
         id: Date.now(),
@@ -115,15 +103,20 @@ app.post('/api/chat', (req, res) => {
     messages.push(newMsg);
     writeMessages(messages);
     console.log(`💬 New message from ${customerEmail}: ${message}`);
+
+    // Send Telegram notification if available (safe)
+    if (global.sendTelegramNotification) {
+        global.sendTelegramNotification(customerName, customerEmail, message);
+    }
+
     res.json({ success: true });
 });
 
-// Admin replies to a customer
 app.post('/api/chat/reply', (req, res) => {
     const messages = readMessages();
     const { customerEmail, replyMessage, adminName } = req.body;
     if (!customerEmail || !replyMessage) {
-        return res.status(400).json({ error: 'Missing email or reply message' });
+        return res.status(400).json({ error: 'Missing email or reply' });
     }
     const newReply = {
         id: Date.now(),
@@ -136,27 +129,84 @@ app.post('/api/chat/reply', (req, res) => {
     };
     messages.push(newReply);
     writeMessages(messages);
-    console.log(`✉️ Admin reply sent to ${customerEmail}`);
+    console.log(`✉️ Reply sent to ${customerEmail}`);
     res.json({ success: true });
 });
 
-// Mark admin messages as read when customer opens chat
 app.post('/api/chat/mark-read', (req, res) => {
-    const { customerEmail } = req.body;
     let messages = readMessages();
+    const { customerEmail } = req.body;
     messages = messages.map(msg => {
-        if (msg.customerEmail === customerEmail && msg.from === 'admin') {
-            msg.read = true;
-        }
+        if (msg.customerEmail === customerEmail && msg.from === 'admin') msg.read = true;
         return msg;
     });
     writeMessages(messages);
     res.json({ success: true });
 });
 
-// Start server
+// ========== TELEGRAM BOT (SAFE, NON-CRASHING) ==========
+const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID;
+
+let bot = null;
+if (TELEGRAM_TOKEN && ADMIN_CHAT_ID && TELEGRAM_TOKEN !== 'undefined' && ADMIN_CHAT_ID !== 'undefined') {
+    try {
+        const TelegramBot = require('node-telegram-bot-api');
+        bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
+        console.log('✅ Telegram bot started (embedded)');
+        bot.sendMessage(ADMIN_CHAT_ID, '✅ Global Shipping Logistics bot is online!');
+    } catch (err) {
+        console.error('Telegram bot start error:', err.message);
+    }
+} else {
+    console.log('ℹ️ Telegram not configured');
+}
+
+async function sendTelegramNotification(customerName, customerEmail, message) {
+    if (!bot || !ADMIN_CHAT_ID) return;
+    const text = `📬 *New Chat Message*\n\n👤 *Customer:* ${customerName}\n📧 *Email:* ${customerEmail}\n💬 *Message:* ${message}\n\nTo reply: /reply ${customerEmail} Your message here`;
+    try {
+        await bot.sendMessage(ADMIN_CHAT_ID, text, { parse_mode: 'Markdown' });
+        console.log('📱 Telegram notification sent');
+    } catch (err) {
+        console.error('Telegram send error:', err.message);
+    }
+}
+
+global.sendTelegramNotification = sendTelegramNotification;
+
+if (bot) {
+    bot.on('message', async (msg) => {
+        if (msg.chat.id.toString() !== ADMIN_CHAT_ID) return;
+        if (!msg.text || !msg.text.startsWith('/reply')) return;
+        const parts = msg.text.split(' ');
+        if (parts.length < 3) {
+            await bot.sendMessage(ADMIN_CHAT_ID, '❌ Usage: /reply customer@email.com Your reply message');
+            return;
+        }
+        const customerEmail = parts[1];
+        const replyMessage = parts.slice(2).join(' ');
+        try {
+            const axios = require('axios');
+            const response = await axios.post(`http://localhost:${PORT}/api/chat/reply`, {
+                customerEmail,
+                replyMessage,
+                adminName: 'Telegram Admin'
+            });
+            if (response.data.success) {
+                await bot.sendMessage(ADMIN_CHAT_ID, '✅ Reply sent to customer.');
+            } else {
+                await bot.sendMessage(ADMIN_CHAT_ID, '❌ Customer email not found.');
+            }
+        } catch (err) {
+            await bot.sendMessage(ADMIN_CHAT_ID, '❌ Error: ' + err.message);
+        }
+    });
+}
+
+// ========== START SERVER ==========
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
     console.log(`📦 Admin Panel: http://localhost:${PORT}/admin.html`);
-    console.log(`💬 Live chat active – messages will be saved with customerEmail`);
+    console.log(`🔍 Tracking: http://localhost:${PORT}/track.html`);
 });
