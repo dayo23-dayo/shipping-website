@@ -129,14 +129,19 @@ nav {
 }
 
 .logo img {
-    height: 120px;   /* increased from 45/70px */
-    width: auto;
-    object-fit: contain;
+    height: 120px !important;
+    width: auto !important;
+    max-width: none !important;
 }
 
+.logo img {
+    width: 200px;
+    height: auto;
+}
 @media (max-width: 768px) {
     .logo img {
         height: 55px;  /* smaller on mobile */
+        width: 150px;
     }
     nav {
         padding: 10px 20px;
