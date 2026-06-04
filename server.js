@@ -1,14 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 8888;
+const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
 
+// Health check for Railway
+app.get('/health', (req, res) => res.send('OK'));
+
+// Data files
 const SHIPMENTS_FILE = 'shipments.json';
 const CHAT_FILE = 'messages.json';
 
@@ -20,7 +25,7 @@ const writeShipments = (data) => fs.writeFileSync(SHIPMENTS_FILE, JSON.stringify
 const readMessages = () => JSON.parse(fs.readFileSync(CHAT_FILE));
 const writeMessages = (data) => fs.writeFileSync(CHAT_FILE, JSON.stringify(data, null, 2));
 
-// Shipment APIs
+// ========== SHIPMENT APIs ==========
 app.get('/api/shipments', (req, res) => res.json(readShipments()));
 
 app.get('/api/track/:trackingNumber', (req, res) => {
@@ -58,7 +63,7 @@ app.delete('/api/shipments/:trackingNumber', (req, res) => {
     res.json({ success: true });
 });
 
-// Chat APIs
+// ========== CHAT APIs ==========
 app.get('/api/conversations', (req, res) => {
     const messages = readMessages();
     const conversations = {};
@@ -132,7 +137,8 @@ app.post('/api/chat/mark-read', (req, res) => {
     writeMessages(messages);
     res.json({ success: true });
 });
-app.get('/health', (req, res) => res.send('OK'));
+
+// ========== START SERVER ON ALL INTERFACES ==========
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
     console.log(`📦 Admin Panel: http://0.0.0.0:${PORT}/admin.html`);
