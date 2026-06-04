@@ -132,9 +132,9 @@ app.post('/api/chat/mark-read', (req, res) => {
     writeMessages(messages);
     res.json({ success: true });
 });
-
-app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
-    console.log(`📦 Admin Panel: http://localhost:${PORT}/admin.html`);
-    console.log(`🔍 Tracking: http://localhost:${PORT}/track.html`);
-});" " 
+app.get('/health', (req, res) => res.send('OK'));
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
+    console.log(`📦 Admin Panel: http://0.0.0.0:${PORT}/admin.html`);
+    console.log(`🔍 Tracking: http://0.0.0.0:${PORT}/track.html`);
+});
