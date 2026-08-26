@@ -3,11 +3,12 @@ const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
 
 // ==========================================
-// 🔑 REPLACE WITH YOUR SUPABASE CREDENTIALS
+// 🔑 SUPABASE CREDENTIALS
 // ==========================================
-const SUPABASE_URL = 'https://https://redacted.invalid';   // <-- Replace this
-const SUPABASE_ANON_KEY = 'REMOVED_JWT';               // <-- Replace this
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseURL = 'https://redacted.invalid';
+const supabase_ANON_KEY = 'REMOVED_SUPABASE_KEY=';
+
+const supabase = createClient(supabaseURL, supabase_ANON_KEY);
 
 // ==========================================
 // EXPRESS APP
@@ -97,7 +98,7 @@ app.delete('/api/shipments/:trackingNumber', async (req, res) => {
 // CHAT APIs
 // ==========================================
 
-// Get all conversations (grouped by customer email)
+// Get all conversations
 app.get('/api/conversations', async (req, res) => {
   const { data, error } = await supabase
     .from('messages')
