@@ -1,8 +1,17 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
 
+// ==========================================
+// 🔑 REPLACE WITH YOUR SUPABASE CREDENTIALS
+// ==========================================
+const SUPABASE_URL = 'https://https://redacted.invalid';   // <-- Replace this
+const SUPABASE_ANON_KEY = 'REMOVED_JWT';               // <-- Replace this
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ==========================================
+// EXPRESS APP
+// ==========================================
 const app = express();
 const PORT = process.env.PORT || 10000;
 
@@ -10,137 +19,188 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
 
-// Health check for Render
 app.get('/health', (req, res) => res.send('OK'));
 
-// Data files
-const SHIPMENTS_FILE = 'shipments.json';
-const CHAT_FILE = 'messages.json';
+// ==========================================
+// SHIPMENT APIs
+// ==========================================
 
-if (!fs.existsSync(SHIPMENTS_FILE)) fs.writeFileSync(SHIPMENTS_FILE, JSON.stringify([], null, 2));
-if (!fs.existsSync(CHAT_FILE)) fs.writeFileSync(CHAT_FILE, JSON.stringify([], null, 2));
-
-const readShipments = () => JSON.parse(fs.readFileSync(SHIPMENTS_FILE));
-const writeShipments = (data) => fs.writeFileSync(SHIPMENTS_FILE, JSON.stringify(data, null, 2));
-const readMessages = () => JSON.parse(fs.readFileSync(CHAT_FILE));
-const writeMessages = (data) => fs.writeFileSync(CHAT_FILE, JSON.stringify(data, null, 2));
-
-// ========== SHIPMENT APIs ==========
-app.get('/api/shipments', (req, res) => res.json(readShipments()));
-
-app.get('/api/track/:trackingNumber', (req, res) => {
-    const shipments = readShipments();
-    const shipment = shipments.find(s => s.trackingNumber === req.params.trackingNumber);
-    shipment ? res.json(shipment) : res.status(404).json({ error: 'Not found' });
+// Get all shipments
+app.get('/api/shipments', async (req, res) => {
+  const { data, error } = await supabase.from('shipments').select('*');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
-app.post('/api/shipments', (req, res) => {
-    const shipments = readShipments();
-    const newShipment = req.body;
-    if (shipments.find(s => s.trackingNumber === newShipment.trackingNumber)) {
-        return res.status(400).json({ error: 'Tracking number exists' });
+// Track a single shipment
+app.get('/api/track/:trackingNumber', async (req, res) => {
+  const { data, error } = await supabase
+    .from('shipments')
+    .select('*')
+    .eq('trackingNumber', req.params.trackingNumber)
+    .single();
+  if (error) return res.status(404).json({ error: 'Not found' });
+  res.json(data);
+});
+
+// Register a new shipment
+app.post('/api/shipments', async (req, res) => {
+  const newShipment = req.body;
+  
+  // Check if tracking number exists
+  const { data: existing } = await supabase
+    .from('shipments')
+    .select('trackingNumber')
+    .eq('trackingNumber', newShipment.trackingNumber)
+    .single();
+  
+  if (existing) {
+    return res.status(400).json({ error: 'Tracking number exists' });
+  }
+  
+  const { data, error } = await supabase
+    .from('shipments')
+    .insert([newShipment]);
+  
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
+});
+
+// Update shipment status
+app.put('/api/shipments/:trackingNumber', async (req, res) => {
+  const { status, currentLocation } = req.body;
+  const { data, error } = await supabase
+    .from('shipments')
+    .update({ 
+      status, 
+      currentLocation, 
+      lastUpdate: new Date().toLocaleString() 
+    })
+    .eq('trackingNumber', req.params.trackingNumber);
+  
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
+});
+
+// Delete a shipment
+app.delete('/api/shipments/:trackingNumber', async (req, res) => {
+  const { error } = await supabase
+    .from('shipments')
+    .delete()
+    .eq('trackingNumber', req.params.trackingNumber);
+  
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
+});
+
+// ==========================================
+// CHAT APIs
+// ==========================================
+
+// Get all conversations (grouped by customer email)
+app.get('/api/conversations', async (req, res) => {
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .order('timestamp', { ascending: true });
+  
+  if (error) return res.status(500).json({ error: error.message });
+  
+  const conversations = {};
+  data.forEach(msg => {
+    const email = msg.customerEmail;
+    if (!email) return;
+    if (!conversations[email]) {
+      conversations[email] = { 
+        customerEmail: email, 
+        customerName: msg.customerName, 
+        messages: [] 
+      };
     }
-    shipments.push(newShipment);
-    writeShipments(shipments);
-    res.json({ success: true });
+    conversations[email].messages.push(msg);
+  });
+  
+  res.json(Object.values(conversations));
 });
 
-app.put('/api/shipments/:trackingNumber', (req, res) => {
-    const shipments = readShipments();
-    const index = shipments.findIndex(s => s.trackingNumber === req.params.trackingNumber);
-    if (index === -1) return res.status(404).json({ error: 'Not found' });
-    shipments[index].status = req.body.status;
-    shipments[index].lastUpdate = new Date().toLocaleString();
-    if (req.body.currentLocation) shipments[index].currentLocation = req.body.currentLocation;
-    writeShipments(shipments);
-    res.json({ success: true });
+// Get messages for a specific customer
+app.get('/api/chat/:customerEmail', async (req, res) => {
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .eq('customerEmail', req.params.customerEmail)
+    .order('timestamp', { ascending: true });
+  
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
 });
 
-app.delete('/api/shipments/:trackingNumber', (req, res) => {
-    let shipments = readShipments();
-    shipments = shipments.filter(s => s.trackingNumber !== req.params.trackingNumber);
-    writeShipments(shipments);
-    res.json({ success: true });
+// Customer sends a message
+app.post('/api/chat', async (req, res) => {
+  const { customerEmail, customerName, message } = req.body;
+  if (!customerEmail || !message) {
+    return res.status(400).json({ error: 'Email and message required' });
+  }
+  
+  const newMsg = {
+    from_user: 'customer',
+    customerName: customerName || 'Anonymous',
+    customerEmail,
+    message,
+    timestamp: new Date().toLocaleString(),
+    read: false,
+    replied: false,
+    replyDate: null,
+    adminName: null,
+  };
+  
+  const { error } = await supabase.from('messages').insert([newMsg]);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
 });
 
-// ========== CHAT APIs ==========
-app.get('/api/conversations', (req, res) => {
-    const messages = readMessages();
-    const conversations = {};
-    messages.forEach(msg => {
-        const email = msg.customerEmail;
-        if (!email) return;
-        if (!conversations[email]) {
-            conversations[email] = { customerEmail: email, customerName: msg.customerName, messages: [] };
-        }
-        conversations[email].messages.push(msg);
-    });
-    res.json(Object.values(conversations));
+// Admin replies to a customer
+app.post('/api/chat/reply', async (req, res) => {
+  const { customerEmail, replyMessage, adminName } = req.body;
+  if (!customerEmail || !replyMessage) {
+    return res.status(400).json({ error: 'Missing email or reply' });
+  }
+  
+  const newReply = {
+    from_user: 'admin',
+    adminName: adminName || 'Support Team',
+    customerEmail,
+    message: replyMessage,
+    timestamp: new Date().toLocaleString(),
+    read: true,
+    replied: true,
+    replyDate: new Date().toLocaleString(),
+    customerName: null,
+  };
+  
+  const { error } = await supabase.from('messages').insert([newReply]);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
 });
 
-app.get('/api/chat/:customerEmail', (req, res) => {
-    const messages = readMessages();
-    const customerMessages = messages.filter(m => m.customerEmail === req.params.customerEmail);
-    customerMessages.sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
-    res.json(customerMessages);
+// Mark messages as read
+app.post('/api/chat/mark-read', async (req, res) => {
+  const { customerEmail } = req.body;
+  const { error } = await supabase
+    .from('messages')
+    .update({ read: true })
+    .eq('customerEmail', customerEmail)
+    .eq('from_user', 'admin');
+  
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
 });
 
-app.post('/api/chat', (req, res) => {
-    const messages = readMessages();
-    const { customerEmail, customerName, message } = req.body;
-    if (!customerEmail || !message) {
-        return res.status(400).json({ error: 'Email and message required' });
-    }
-    const newMsg = {
-        id: Date.now(),
-        from: 'customer',
-        customerName: customerName || 'Anonymous',
-        customerEmail: customerEmail,
-        message: message,
-        timestamp: new Date().toLocaleString(),
-        read: false
-    };
-    messages.push(newMsg);
-    writeMessages(messages);
-    console.log(`💬 New message from ${customerEmail}: ${message}`);
-    res.json({ success: true });
-});
-
-app.post('/api/chat/reply', (req, res) => {
-    const messages = readMessages();
-    const { customerEmail, replyMessage, adminName } = req.body;
-    if (!customerEmail || !replyMessage) {
-        return res.status(400).json({ error: 'Missing email or reply' });
-    }
-    const newReply = {
-        id: Date.now(),
-        from: 'admin',
-        adminName: adminName || 'Support Team',
-        customerEmail: customerEmail,
-        message: replyMessage,
-        timestamp: new Date().toLocaleString(),
-        read: true
-    };
-    messages.push(newReply);
-    writeMessages(messages);
-    console.log(`✉️ Reply sent to ${customerEmail}`);
-    res.json({ success: true });
-});
-
-app.post('/api/chat/mark-read', (req, res) => {
-    let messages = readMessages();
-    const { customerEmail } = req.body;
-    messages = messages.map(msg => {
-        if (msg.customerEmail === customerEmail && msg.from === 'admin') msg.read = true;
-        return msg;
-    });
-    writeMessages(messages);
-    res.json({ success: true });
-});
-
-// ========== START SERVER ==========
+// ==========================================
+// START SERVER
+// ==========================================
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
-    console.log(`📦 Admin Panel: http://0.0.0.0:${PORT}/admin.html`);
-    console.log(`🔍 Tracking: http://0.0.0.0:${PORT}/track.html`);
+  console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
+  console.log(`📦 Admin Panel: http://0.0.0.0:${PORT}/admin.html`);
+  console.log(`🔍 Tracking: http://0.0.0.0:${PORT}/track.html`);
 });
