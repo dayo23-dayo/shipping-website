@@ -1,554 +1,187 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Shipping Logistics | Trusted International Shipping</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* Additional styles for new sections */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 40px 0;
-        }
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-        .stat-card i {
-            font-size: 48px;
-            color: #007bff;
-            margin-bottom: 15px;
-        }
-        .stat-card h3 {
-            font-size: 36px;
-            margin: 10px 0;
-            color: #007bff;
-        }
-        .stat-card p {
-            color: #666;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin: 40px 0;
-        }
-        .info-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-left: 4px solid #007bff;
-        }
-        .info-card i {
-            font-size: 32px;
-            color: #007bff;
-            margin-bottom: 15px;
-        }
-        .info-card h3 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-        .info-card ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        .info-card li {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .info-card li:last-child {
-            border-bottom: none;
-        }
-        .info-card li i {
-            font-size: 14px;
-            margin-right: 10px;
-            color: #28a745;
-        }
-        .country-badge {
-            display: inline-block;
-            background: #e3f2fd;
-            color: #007bff;
-            padding: 5px 12px;
-            border-radius: 20px;
-            margin: 5px;
-            font-size: 14px;
-        }
-        .feature-banner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 12px;
-            margin: 40px 0;
-            text-align: center;
-        }
-        .feature-banner h3 {
-            font-size: 28px;
-            margin-bottom: 20px;
-        }
-        .feature-banner .btn {
-            background: #ff6b35;
-            margin-top: 15px;
-        }
-        .clearance-info {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            color: #856404;
-        }
-        .delivery-option {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            margin: 10px 0;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        .delivery-option i {
-            font-size: 24px;
-            width: 40px;
-        }
-        .support-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-        .support-link {
-            background: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
-        }
-        .address-card {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin: 40px 0;
-            text-align: center;
-        }
-        .address-card i {
-            font-size: 32px;
-            margin-bottom: 15px;
-            color: #ffc107;
-        }
-        .address-card h3 {
-            margin-bottom: 15px;
-        }
-        .address-card p {
-            margin: 5px 0;
-            font-size: 16px;
-        }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Reliable international shipping, freight coordination, customs support and end-to-end shipment tracking.">
+    <title>Global Shipping Logistics | International Delivery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="home.css">
 </head>
 <body>
+    <header class="site-header">
+        <a class="brand" href="/" aria-label="Global Shipping Logistics home">
+            <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 28 28" role="img"><path d="M4 8.5 14 3l10 5.5v11L14 25 4 19.5v-11Z"/><path d="m4.5 8.8 9.5 5.3 9.5-5.3M14 14v10.3"/></svg>
+            </span>
+            <span>Global Shipping <strong>Logistics</strong></span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+            <span></span><span></span><span></span><span class="sr-only">Toggle navigation</span>
+        </button>
+        <nav id="primary-nav" aria-label="Primary navigation">
+            <a href="#services">Services</a>
+            <a href="#process">How it works</a>
+            <a href="#network">Network</a>
+            <a href="#contact">Contact</a>
+            <a class="nav-cta" href="/track">Track shipment</a>
+        </nav>
+    </header>
 
-    <!-- WhatsApp Floating Button -->
-    <a href="https://wa.me/17125501810" class="whatsapp-float" target="_blank">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
-    <!-- Chat Support Button -->
-    <div class="chat-support" id="chatBtn">
-        <i class="fas fa-headset"></i> Live Chat
-    </div>
-
-    <!-- Chat Modal -->
-    <div id="chatModal" class="chat-modal">
-        <div class="chat-modal-content">
-            <div class="chat-header">
-                <span>Live Support</span>
-                <span class="close-chat">&times;</span>
-            </div>
-            <div class="chat-body">
-                <p>👋 Hello! How can we help you today?</p>
-                <p>📧 Email: globalshipinglogistic@gmail.com</p>
-                <p>📞 WhatsApp: +17125501810</p>
-                <p>🏢 Hub: 426 Massachusetts Avenue Washington, DC 20011 USA<br>
-                <hr>
-                <p><strong>💡 Quick Help:</strong></p>
-                <p>• Track your shipment</p>
-                <p>• Customs clearance info</p>
-                <p>• Delivery estimates</p>
-                <p>• Claims & support</p>
-            </div>
-            <div class="chat-footer">
-                <input type="text" placeholder="Type your message..." id="chatInput">
-                <button id="sendChat">Send</button>
-            </div>
-        </div>
-        <div style="text-align: right; margin-bottom: 10px;">
-    <button onclick="loadChatHistory()" style="background: none; border: none; cursor: pointer;">🔄 Refresh</button>
-</div>
-    </div>
-
-    <!-- Navigation - ADMIN BUTTON REMOVED -->
-    <nav>
-        <div class="logo">
-    <img src="logo.png" alt="Global Shipping Logistics" style="height: 50px; width: auto;">
-</div>
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#delivery">Delivery Options</a></li>
-            <li><a href="#countries">Countries</a></li>
-            <li><a href="track.html">Track Shipment</a></li>
-        </ul>
-    </nav>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero"> 
-        <div class="hero-content">
-            <h2>Trusted International Shipping With <span>Speed, Security</span> and Full Visibility</h2>
-            <div style="display: flex; justify-content: center; gap: 30px; margin: 30px 0; flex-wrap: wrap;">
-                <div>
-                    <h3>85%</h3>
-                    <p>Shipments Delivered On Time</p>
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-media" aria-hidden="true"></div>
+            <div class="hero-overlay" aria-hidden="true"></div>
+            <div class="container hero-layout">
+                <div class="hero-copy">
+                    <span class="eyebrow light">International logistics, handled properly</span>
+                    <h1>Ship globally.<br><span>Stay in control.</span></h1>
+                    <p>Reliable freight coordination, customs support and clear shipment visibility—from pickup to final delivery.</p>
                 </div>
-                <div>
-                    <h3>30+</h3>
-                    <p>Countries Worldwide</p>
-                </div>
-                <div>
-                    <h3>24/7</h3>
-                    <p>Customer Support</p>
-                </div>
-                <div>
-                    <h3>100%</h3>
-                    <p>Tracking Visibility</p>
+
+                <aside class="tracking-panel" aria-label="Quick shipment tracking">
+                    <span class="panel-label">Shipment tracking</span>
+                    <h2>Where is your shipment?</h2>
+                    <p>Enter the tracking number from your shipping receipt.</p>
+                    <form action="/track" method="get">
+                        <label for="homeTrackingNumber">Tracking number</label>
+                        <div class="tracking-field">
+                            <input id="homeTrackingNumber" name="tracking" type="text" placeholder="GSL-2026-AB12CD34" autocomplete="off" required>
+                            <button type="submit" aria-label="Track shipment">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="panel-note"><span></span> Secure, real-time shipment updates</div>
+                </aside>
+                <div class="hero-actions">
+                    <a class="button button-ghost" href="#services">Explore our services</a>
+                    <a class="button button-ghost" href="#contact">Speak with our team</a>
                 </div>
             </div>
-            <p>Logistics solutions built on reliability, shipment safety and professional support</p>
-            <button class="btn" onclick="location.href='track.html'">Track Your Shipment</button>
-            <button class="btn" onclick="location.href='#delivery'" style="background: #28a745; margin-left: 15px;">Get a Quote</button>
-        </div>
-    </section>
+        </section>
 
-    <!-- Hub Address Section (ADDED) -->
-    <div class="address-card">
-        <i class="fas fa-building"></i>
-        <h3>🏢 Our Global Shipping Hub</h3>
-        <p><strong>426 Massachusetts Avenue</strong></p>
-        <p><strong>Washington, DC 20011</strong></p>
-        <p><strong>USA</strong></p>
-        <p style="margin-top: 15px;">📞 WhatsApp: +17125501810 | 📧 globalshipinglogistic@gmail.com</p>
-    </div>
+        <section class="trust-strip" aria-label="Service promises">
+            <div class="container trust-grid">
+                <div><strong>Door-to-door</strong><span>Coordinated collection and delivery</span></div>
+                <div><strong>Global reach</strong><span>International routes and partners</span></div>
+                <div><strong>Clear visibility</strong><span>Milestone-based tracking updates</span></div>
+                <div><strong>Direct support</strong><span>Help when your shipment needs it</span></div>
+            </div>
+        </section>
 
-    <!-- Statistics / Trust Badges -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <i class="fas fa-box"></i>
-            <h3>10K+</h3>
-            <p>Packages Shipped Monthly</p>
-        </div>
-        <div class="stat-card">
-            <i class="fas fa-globe"></i>
-            <h3>30+</h3>
-            <p>Countries Served</p>
-        </div>
-        <div class="stat-card">
-            <i class="fas fa-clock"></i>
-            <h3>98%</h3>
-            <p>On-Time Delivery Rate</p>
-        </div>
-        <div class="stat-card">
-            <i class="fas fa-smile"></i>
-            <h3>5000+</h3>
-            <p>Happy Customers</p>
-        </div>
-    </div>
+        <section class="section services" id="services">
+            <div class="container">
+                <div class="section-heading split-heading">
+                    <div>
+                        <span class="eyebrow">What we move</span>
+                        <h2>Logistics built around your shipment</h2>
+                    </div>
+                    <p>From urgent documents to commercial freight, we coordinate the route, paperwork and delivery details in one place.</p>
+                </div>
+                <div class="service-grid">
+                    <article class="service-item">
+                        <span class="service-number">01</span>
+                        <div class="line-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M3 20h18V8H3v12Zm18-7h4l4 5v2h-8v-7ZM8 25a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm16 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/></svg></div>
+                        <h3>Express delivery</h3>
+                        <p>Priority handling for time-sensitive shipments, with clear milestones throughout the journey.</p>
+                    </article>
+                    <article class="service-item">
+                        <span class="service-number">02</span>
+                        <div class="line-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 25h24M7 25V11l9-5 9 5v14M11 15h3v4h-3v-4Zm7 0h3v4h-3v-4ZM12 25v-3h8v3"/></svg></div>
+                        <h3>Freight forwarding</h3>
+                        <p>Flexible air, sea and ground coordination for individual consignments and commercial cargo.</p>
+                    </article>
+                    <article class="service-item">
+                        <span class="service-number">03</span>
+                        <div class="line-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M9 4h14v24H9V4Zm4 6h6m-6 5h6m-6 5h4M5 9h4m14 14h4"/></svg></div>
+                        <h3>Customs support</h3>
+                        <p>Documentation guidance and clearance coordination to keep international shipments moving.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
 
-    <!-- Delivery Options Section -->
-    <section id="delivery" class="services">
-        <h2>🚚 Our Delivery Options</h2>
-        <div class="info-grid">
-            <div class="info-card">
-                <i class="fas fa-door-open"></i>
-                <h3>🏠 Doorstep Delivery</h3>
-                <p>Direct delivery to your home or office address with real-time tracking and signature confirmation upon delivery.</p>
-                <ul>
-                    <li><i class="fas fa-check-circle"></i> Free tracking updates</li>
-                    <li><i class="fas fa-check-circle"></i> SMS/WhatsApp/Support chat</li>
-                    <li><i class="fas fa-check-circle"></i> Signature required for security</li>
-                    <li><i class="fas fa-check-circle"></i> 2-hour delivery window</li>
-                </ul>
+        <section class="section process" id="process">
+            <div class="container process-layout">
+                <div class="process-intro">
+                    <span class="eyebrow light">A clearer journey</span>
+                    <h2>One shipment.<br>Four simple stages.</h2>
+                    <p>Our team keeps the process straightforward and gives you a single tracking reference from dispatch to delivery.</p>
+                    <a class="text-link light" href="/track">Open shipment tracking <span>→</span></a>
+                </div>
+                <ol class="process-list">
+                    <li><span>01</span><div><h3>Book and prepare</h3><p>We confirm shipment details, route and required documents.</p></div></li>
+                    <li><span>02</span><div><h3>Collect and dispatch</h3><p>Your shipment enters the selected transport network.</p></div></li>
+                    <li><span>03</span><div><h3>Clear and transfer</h3><p>We coordinate transit milestones and customs requirements.</p></div></li>
+                    <li><span>04</span><div><h3>Deliver and confirm</h3><p>Final delivery is completed and reflected in your tracking history.</p></div></li>
+                </ol>
             </div>
-            <div class="info-card">
-                <i class="fas fa-train"></i>
-                <h3>🚛 Freight Transit</h3>
-                <p>Bulk shipping solutions for businesses with competitive rates and full cargo insurance.</p>
-                <ul>
-                    <li><i class="fas fa-check-circle"></i> LCL / FCL container shipping</li>
-                    <li><i class="fas fa-check-circle"></i> Air freight available</li>
-                    <li><i class="fas fa-check-circle"></i> Cargo insurance included</li>
-                    <li><i class="fas fa-check-circle"></i> Volume discounts</li>
-                </ul>
-            </div>
-            <div class="info-card">
-                <i class="fas fa-bolt"></i>
-                <h3>⚡ Express Delivery</h3>
-                <p>Urgent shipments delivered in 1-3 business days worldwide.</p>
-                <ul>
-                    <li><i class="fas fa-check-circle"></i> 24-48 hour delivery</li>
-                    <li><i class="fas fa-check-circle"></i> Priority customs clearance</li>
-                    <li><i class="fas fa-check-circle"></i> Dedicated support team</li>
-                    <li><i class="fas fa-check-circle"></i> Money-back guarantee</li>
-                </ul>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Countries Section -->
-    <section id="countries" class="partners">
-        <h2>🌍 30+ Countries of Trusted Delivery</h2>
-        <p style="margin-bottom: 30px;">We deliver to major destinations worldwide with local partnerships</p>
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 900px; margin: 0 auto;">
-            <span class="country-badge">🇺🇸 USA</span>
-            <span class="country-badge">🇨🇦 Canada</span>
-            <span class="country-badge">🇬🇧 United Kingdom</span>
-            <span class="country-badge">🇩🇪 Germany</span>
-            <span class="country-badge">🇫🇷 France</span>
-            <span class="country-badge">🇮🇹 Italy</span>
-            <span class="country-badge">🇪🇸 Spain</span>
-            <span class="country-badge">🇦🇺 Australia</span>
-            <span class="country-badge">🇯🇵 Japan</span>
-            <span class="country-badge">🇨🇳 China</span>
-            <span class="country-badge">🇮🇳 India</span>
-            <span class="country-badge">🇧🇷 Brazil</span>
-            <span class="country-badge">🇦🇪 UAE</span>
-            <span class="country-badge">🇸🇦 Saudi Arabia</span>
-            <span class="country-badge">🇿🇦 South Africa</span>
-            <span class="country-badge">🇳🇬 Nigeria</span>
-            <span class="country-badge">🇪🇬 Egypt</span>
-            <span class="country-badge">🇹🇷 Turkey</span>
-            <span class="country-badge">🇷🇺 Russia</span>
-            <span class="country-badge">🇰🇷 South Korea</span>
-            <span class="country-badge">🇸🇬 Singapore</span>
-            <span class="country-badge">🇲🇾 Malaysia</span>
-            <span class="country-badge">🇹🇭 Thailand</span>
-            <span class="country-badge">🇻🇳 Vietnam</span>
-            <span class="country-badge">🇵🇭 Philippines</span>
-            <span class="country-badge">🇵🇰 Pakistan</span>
-            <span class="country-badge">🇧🇩 Bangladesh</span>
-            <span class="country-badge">🇰🇪 Kenya</span>
-            <span class="country-badge">🇲🇦 Morocco</span>
-            <span class="country-badge">🇲🇽 Mexico</span>
-            <span class="country-badge">🇦🇷 Argentina</span>
-            <span class="country-badge">🇳🇱 Netherlands</span>
-            <span class="country-badge">🇧🇪 Belgium</span>
-            <span class="country-badge">🇨🇭 Switzerland</span>
-        </div>
-    </section>
+        <section class="section network" id="network">
+            <div class="container network-layout">
+                <div class="network-visual">
+                    <img src="pexels-yankrukov-6818154.jpg" alt="Logistics professionals coordinating a shipment" loading="lazy">
+                    <div class="network-caption"><span>Washington, DC hub</span><strong>Connecting shipments to key global routes</strong></div>
+                </div>
+                <div class="network-copy">
+                    <span class="eyebrow">International network</span>
+                    <h2>Global coordination with local attention</h2>
+                    <p>We support shipments across North America, Europe, Africa, Asia, the Middle East and Oceania through a responsive logistics network.</p>
+                    <div class="region-list">
+                        <span>North America</span><span>Europe</span><span>Africa</span><span>Asia Pacific</span><span>Middle East</span><span>Oceania</span>
+                    </div>
+                    <div class="hub-address">
+                        <span>Operations hub</span>
+                        <p>426 Massachusetts Avenue<br>Washington, DC 20011, USA</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <!-- Customs & Clearance Section -->
-    <section class="info-grid" style="background: #f0f7ff; padding: 40px; border-radius: 20px; margin: 20px 50px;">
-        <div class="info-card clearance-info" style="border-left-color: #ffc107;">
-            <i class="fas fa-passport"></i>
-            <h3>✈️ Airport Clearance & Customs</h3>
-            <p><strong>Professional customs brokerage services</strong> to ensure smooth clearance of your shipments.</p>
-            <ul>
-                <li><i class="fas fa-check-circle"></i> HS Code classification assistance</li>
-                <li><i class="fas fa-check-circle"></i> Documentation preparation (Commercial Invoice, Packing List)</li>
-                <li><i class="fas fa-check-circle"></i> Customs bond management</li>
-                <li><i class="fas fa-check-circle"></i> Duty and tax calculation</li>
-                <li><i class="fas fa-check-circle"></i> 24-hour express clearance available</li>
-            </ul>
-        </div>
-        <div class="info-card" style="border-left-color: #dc3545;">
-            <i class="fas fa-receipt"></i>
-            <h3>💰 Receiver Charges (Import Duties)</h3>
-            <p><strong>Important information about import duties and taxes:</strong></p>
-            <ul>
-                <li><i class="fas fa-info-circle"></i> <strong>DDU (Delivered Duty Unpaid):</strong> Receiver pays duties upon agent contact</li>
-                <li><i class="fas fa-info-circle"></i> Customs duties vary by country</li>
-                <li><i class="fas fa-info-circle"></i> VAT/GST may apply (depending on country)</li>
-                <li><i class="fas fa-info-circle"></i> Clearance fees: not specified</li>
-                <li><i class="fas fa-info-circle"></i> Storage fees apply after 3 days at customs</li>
-            </ul>
-            <p style="margin-top: 10px; background: #e8f5e9; padding: 8px; border-radius: 5px;">
-                <strong>💡 Tip:</strong> Contact our support for duty estimates
-            </p>
-        </div>
-    </section>
+        <section class="section support" id="contact">
+            <div class="container support-box">
+                <div>
+                    <span class="eyebrow light">Talk to a real person</span>
+                    <h2>Need help with a shipment?</h2>
+                    <p>Contact our team for delivery questions, customs support or a shipping quote.</p>
+                </div>
+                <div class="support-actions">
+                    <a class="button button-white" href="mailto:globalshipinglogistic@gmail.com">Email our team</a>
+                    <a class="button button-outline" href="https://wa.me/17125501810" target="_blank" rel="noopener">WhatsApp support</a>
+                    <button class="text-button" id="chatBtn" type="button">Send a quick message</button>
+                </div>
+            </div>
+        </section>
+    </main>
 
-    <!-- Shipment Support Banner -->
-    <div class="feature-banner">
-        <i class="fas fa-headset" style="font-size: 48px;"></i>
-        <h3>24/7 Shipment Support</h3>
-        <p>Our dedicated support team is available around the clock to assist with tracking, customs issues, and delivery concerns.</p>
-        <div class="support-links">
-            <a href="https://wa.me/+7125501810" class="support-link"><i class="fab fa-whatsapp"></i> WhatsApp Support</a>
-            <a href="mailto:globalshipinglogistic@gmail.com" class="support-link"><i class="fas fa-envelope"></i> Email Support</a>
-            <a href="#" class="support-link" onclick="document.getElementById('chatBtn').click(); return false;"><i class="fas fa-comment"></i> Live Chat</a>
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a class="brand brand-light" href="/">
+                    <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M4 8.5 14 3l10 5.5v11L14 25 4 19.5v-11Z"/><path d="m4.5 8.8 9.5 5.3 9.5-5.3M14 14v10.3"/></svg></span>
+                    <span>Global Shipping <strong>Logistics</strong></span>
+                </a>
+                <p>International logistics with clear communication and dependable shipment visibility.</p>
+            </div>
+            <div><h3>Explore</h3><a href="#services">Services</a><a href="#process">How it works</a><a href="/track">Track shipment</a></div>
+            <div><h3>Contact</h3><a href="mailto:globalshipinglogistic@gmail.com">globalshipinglogistic@gmail.com</a><a href="https://wa.me/17125501810">+1 712 550 1810</a></div>
         </div>
-    </div>
-
-    <!-- Our Services -->
-    <section id="services" class="services">
-        <h2>Our Professional Services</h2>
-        <div class="service-cards">
-            <div class="card">
-                <i class="fas fa-warehouse"></i>
-                <h3>Warehousing</h3>
-                <p>Secure storage with climate control and inventory management</p>
-            </div>
-            <div class="card">
-                <i class="fas fa-truck"></i>
-                <h3>Freight Forwarding</h3>
-                <p>Air, sea, and ground freight solutions worldwide</p>
-            </div>
-            <div class="card">
-                <i class="fas fa-clipboard-list"></i>
-                <h3>Customs Clearance</h3>
-                <p>Hassle-free documentation and brokerage</p>
-            </div>
-            <div class="card">
-                <i class="fas fa-exchange-alt"></i>
-                <h3>Returns Management</h3>
-                <p>Easy return processing and reverse logistics</p>
-            </div>
-            <div class="card">
-                <i class="fas fa-shield-alt"></i>
-                <h3>Cargo Insurance</h3>
-                <p>Full coverage for loss or damage</p>
-            </div>
-            <div class="card">
-                <i class="fas fa-chart-line"></i>
-                <h3>Real-time Tracking</h3>
-                <p>End-to-end visibility of your shipment</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Delivery Time Estimates -->
-    <section style="padding: 40px 50px; background: #e8f5e9;">
-        <h2 style="text-align: center;">📅 Estimated Delivery Times</h2>
-        <div class="info-grid" style="margin-top: 20px;">
-            <div class="delivery-option">
-                <i class="fas fa-plane" style="color: #007bff;"></i>
-                <div><strong>Air Freight:</strong> 3-7 business days</div>
-            </div>
-            <div class="delivery-option">
-                <i class="fas fa-ship" style="color: #007bff;"></i>
-                <div><strong>Sea Freight:</strong> 20-40 business days</div>
-            </div>
-            <div class="delivery-option">
-                <i class="fas fa-truck" style="color: #007bff;"></i>
-                <div><strong>Ground Shipping:</strong> 2-5 business days (domestic)</div>
-            </div>
-            <div class="delivery-option">
-                <i class="fas fa-bolt" style="color: #007bff;"></i>
-                <div><strong>Express:</strong> 1-3 business days worldwide</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Trusted Partners -->
-    <section class="partners">
-        <h2>Supported by trusted logistics partners</h2>
-        <div class="partner-logos">
-            <span>ABC Logistics</span>
-            <span>DEF Logistics</span>
-            <span>GHI Logistics</span>
-            <span>JKL Logistics</span>
-            <span>MNO Express</span>
-            <span>PQR Freight</span>
-        </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="testimonials">
-        <h2>What clients say about our service</h2>
-        <div class="testimonial-cards">
-            <div class="testimonial">"Trusted International Shipping has been a game-changer for my business. Their doorstep delivery is incredibly reliable!"</div>
-            <div class="testimonial">"Working with Global Shipping Logistics was a breeze. Customs clearance was handled professionally."</div>
-            <div class="testimonial">"The support I received from their team was invaluable. They helped me understand all the receiver charges upfront."</div>
-        </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section class="faq">
-        <h2>Answers to common shipping questions</h2>
-        <div class="faq-item">
-            <strong>📦 How to track my shipment?</strong>
-            <p>Use our tracking system on the Track page with your unique tracking number.</p>
-        </div>
-        <div class="faq-item">
-            <strong>💰 Who pays customs duties - shipper or receiver?</strong>
-            <p>It depends on your agreement. Receiver pays upon delivery agent contact. We'll clarify this before shipping.</p>
-        </div>
-        <div class="faq-item">
-            <strong>🚚 Do you offer doorstep delivery?</strong>
-            <p>Yes! We provide door-to-door delivery service in all 30+ countries we serve.</p>
-        </div>
-        <div class="faq-item">
-            <strong>✈️ How long does airport clearance take?</strong>
-            <p>Standard clearance takes 24-48 hours. Express clearance is available in 4-6 hours for an additional fee.</p>
-        </div>
-        <div class="faq-item">
-            <strong>📞 What if my package is delayed?</strong>
-            <p>Contact our 24/7 support team immediately. We'll investigate and provide compensation if eligible.</p>
-        </div>
-        <div class="faq-item">
-            <strong>🌍 Which countries do you ship to?</strong>
-            <p>We ship to over 30 countries across North America, Europe, Asia, Africa, and the Middle East.</p>
-        </div>
-    </section>
-
-    <!-- Call to Action -->
-    <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; text-align: center; padding: 60px; margin: 40px 0;">
-        <h2>Ready to Ship with Confidence?</h2>
-        <p style="margin: 20px 0;">Get a free quote today and experience reliable international shipping.</p>
-        <button class="btn" onclick="location.href='https://wa.me/17125501810'" style="background: #25D366;">📱 Contact us on WhatsApp</button>
-        <button class="btn" onclick="location.href='track.html'" style="background: #007bff; margin-left: 15px;">🔍 Track Your Shipment</button>
-    </div>
-
-    <footer>
-        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px; margin-bottom: 30px;">
-            <div>
-                <h4>Global Shipping Logistics</h4>
-                <p>Trusted international shipping since 2020</p>
-                <p>📧 globalshipinglogistics@gmail.com</p>
-                <p>📞 WhatsApp: +17125501810</p>
-            </div>
-            <div>
-                <h4>Our Hub</h4>
-                <p>426 Massachusetts Avenue</p>
-                <p>Washington, DC 20011</p>
-                <p>USA</p>
-            </div>
-            <div>
-                <h4>Quick Links</h4>
-                <p><a href="track.html" style="color: white;">Track Shipment</a></p>
-                <p><a href="#services" style="color: white;">Our Services</a></p>
-                <p><a href="#countries" style="color: white;">Shipping Countries</a></p>
-            </div>
-            <div>
-                <h4>Support</h4>
-                <p>24/7 Customer Support</p>
-                <p>Claims & Returns</p>
-                <p>Customs Assistance</p>
-            </div>
-        </div>
-        <hr style="border-color: #333;">
-        <p style="margin-top: 20px;">© 2025 Global Shipping Logistics - All Rights Reserved</p>
+        <div class="container footer-bottom"><span>© 2026 Global Shipping Logistics</span><span>Washington, DC · Worldwide delivery</span></div>
     </footer>
 
+    <div id="chatModal" class="chat-modal" role="dialog" aria-modal="true" aria-labelledby="chatTitle" aria-hidden="true">
+        <div class="chat-modal-content">
+            <div class="chat-header"><div><span>Support</span><strong id="chatTitle">How can we help?</strong></div><button class="close-chat" type="button" aria-label="Close chat">×</button></div>
+            <div class="chat-body"><p>Send us your question and our team will respond using the email address you provide.</p></div>
+            <div class="chat-footer"><input type="text" id="chatInput" placeholder="Type your message" aria-label="Message"><button id="sendChat" type="button">Send</button></div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+    <script src="home.js"></script>
 </body>
 </html>

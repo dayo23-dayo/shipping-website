@@ -9,7 +9,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('logistics-bg.jpg');
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7));
             background-size: cover;
             background-position: center;
             min-height: 100vh;
@@ -37,6 +37,22 @@
             border-radius: 12px;
             font-size: 16px;
         }
+        .password-field { position: relative; margin: 10px 0; }
+        .password-field input { margin: 0; padding-right: 72px; }
+        .password-toggle {
+            width: auto;
+            position: absolute;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            margin: 0;
+            padding: 7px 9px;
+            color: #1769e0;
+            background: transparent;
+            border-radius: 7px;
+            font-size: 12px;
+        }
+        .password-toggle:hover { color: #0b1d35; background: #eef5ff; }
         button {
             width: 100%;
             padding: 14px;
@@ -58,22 +74,41 @@
         <h2>🔐 Admin Access</h2>
         <p>Enter the admin password to continue</p>
         <form id="loginForm">
-            <input type="password" id="password" placeholder="Password" autofocus>
+            <div class="password-field">
+                <input type="password" id="password" placeholder="Password" autocomplete="current-password" autofocus>
+                <button class="password-toggle" id="passwordToggle" type="button" aria-pressed="false" aria-label="Show password">Show</button>
+            </div>
             <button type="submit">Login</button>
             <div id="errorMsg" class="error"></div>
         </form>
     </div>
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('passwordToggle');
+        passwordToggle.addEventListener('click', () => {
+            const isVisible = passwordInput.type === 'text';
+            passwordInput.type = isVisible ? 'password' : 'text';
+            passwordToggle.textContent = isVisible ? 'Show' : 'Hide';
+            passwordToggle.setAttribute('aria-pressed', String(!isVisible));
+            passwordToggle.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const entered = document.getElementById('password').value;
-            // CHANGE THIS PASSWORD to your own (keep it secret)
-            const correctPassword = "REMOVED_ADMIN_PASSWORD";
-            if (entered === correctPassword) {
-                sessionStorage.setItem('adminAuthenticated', 'true');
-                window.location.href = 'admin.html';
-            } else {
-                document.getElementById('errorMsg').innerText = '❌ Incorrect password. Access denied.';
+            const entered = passwordInput.value;
+            const error = document.getElementById('errorMsg');
+            error.innerText = '';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: entered }),
+                });
+                if (!response.ok) throw new Error('Invalid credentials');
+                window.location.href = '/admin';
+            } catch {
+                error.innerText = '❌ Incorrect password. Access denied.';
             }
         });
     </script>

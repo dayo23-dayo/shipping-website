@@ -1,207 +1,226 @@
 const express = require('express');
-const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
-
-// ==========================================
-// 🔑 SUPABASE CREDENTIALS
-// ==========================================
-const supabaseURL = 'https://redacted.invalid';
-const supabase_ANON_KEY = 'REMOVED_SUPABASE_KEY=';
-
-const supabase = createClient(supabaseURL, supabase_ANON_KEY);
+const path = require('node:path');
+const config = require('./src/config');
+const HttpError = require('./src/http-error');
+const shipmentService = require('./src/shipment-service');
+const messageService = require('./src/message-service');
+const validation = require('./src/validation');
+const {
+  createSession,
+  requireAdmin,
+  requireAdminPage,
+  requireAdminOrBot,
+  sessionCookie,
+  verifyPassword,
+} = require('./src/auth');
 
 // ==========================================
 // EXPRESS APP
 // ==========================================
 const app = express();
-const PORT = process.env.PORT || 10000;
+const loginAttempts = new Map();
+const publicRequests = new Map();
+const publicFiles = new Set([
+  '/',
+  '/track',
+  '/login',
+  '/admin',
+  '/receipt',
+  '/style.css',
+  '/script.js',
+  '/home.css',
+  '/home.js',
+  '/admin.css',
+  '/admin.js',
+  '/track.css',
+  '/track.js',
+  '/logo.png',
+  '/pexels-yankrukov-6818154.jpg',
+]);
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static('.'));
+const asyncRoute = (handler) => (req, res, next) => Promise.resolve(handler(req, res, next)).catch(next);
 
-app.get('/health', (req, res) => res.send('OK'));
+function rateLimit({ limit, windowMs }) {
+  return (req, res, next) => {
+    const key = `${req.ip}:${req.route?.path || req.path}`;
+    const bucket = publicRequests.get(key) || { count: 0, resetAt: Date.now() + windowMs };
+    if (bucket.resetAt <= Date.now()) {
+      bucket.count = 0;
+      bucket.resetAt = Date.now() + windowMs;
+    }
+    bucket.count += 1;
+    publicRequests.set(key, bucket);
+    res.setHeader('RateLimit-Remaining', String(Math.max(0, limit - bucket.count)));
+    if (bucket.count > limit) return res.status(429).json({ error: 'Too many requests', code: 'RATE_LIMITED' });
+    next();
+  };
+}
+
+app.disable('x-powered-by');
+app.use(express.json({ limit: '32kb' }));
+app.use((req, res, next) => {
+  res.set({
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+  });
+  next();
+});
+const cleanPages = new Map([
+  ['/track', 'track.html'],
+  ['/login', 'login.html'],
+  ['/receipt', 'receipt.html'],
+]);
+
+for (const [route, file] of cleanPages) {
+  app.get(route, (req, res) => res.sendFile(path.join(__dirname, file)));
+}
+
+app.get('/admin', requireAdminPage, (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+app.get(['/index.html', '/track.html', '/login.html', '/admin.html', '/receipt.html'], (req, res) => {
+  const cleanPath = req.path === '/index.html' ? '/' : req.path.slice(0, -5);
+  const queryIndex = req.originalUrl.indexOf('?');
+  const query = queryIndex === -1 ? '' : req.originalUrl.slice(queryIndex);
+  res.redirect(308, `${cleanPath}${query}`);
+});
+app.use((req, res, next) => {
+  if ((req.method === 'GET' || req.method === 'HEAD') && !req.path.startsWith('/api/') && req.path !== '/health' && !publicFiles.has(req.path)) {
+    return res.status(404).send('Not found');
+  }
+  next();
+});
+app.use(express.static('.', { dotfiles: 'deny', index: 'index.html' }));
+
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+// ==========================================
+// ADMIN AUTHENTICATION
+// ==========================================
+app.post('/api/auth/login', async (req, res, next) => {
+  const clientId = req.ip;
+  const attempt = loginAttempts.get(clientId) || { count: 0, resetAt: 0 };
+  if (attempt.resetAt <= Date.now()) {
+    attempt.count = 0;
+    attempt.resetAt = Date.now() + 15 * 60 * 1000;
+  }
+  if (attempt.count >= 5) return res.status(429).json({ error: 'Try again later' });
+
+  try {
+    const password = typeof req.body?.password === 'string' ? req.body.password : '';
+    if (!(await verifyPassword(password))) {
+      attempt.count += 1;
+      loginAttempts.set(clientId, attempt);
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    loginAttempts.delete(clientId);
+    res.setHeader('Set-Cookie', sessionCookie(createSession()));
+    return res.json({ success: true });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  res.setHeader('Set-Cookie', sessionCookie('', 0));
+  res.status(204).end();
+});
+
+app.get('/api/auth/session', requireAdmin, (req, res) => res.json({ authenticated: true }));
 
 // ==========================================
 // SHIPMENT APIs
 // ==========================================
 
 // Get all shipments
-app.get('/api/shipments', async (req, res) => {
-  const { data, error } = await supabase.from('shipments').select('*');
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+app.get('/api/shipments', requireAdmin, asyncRoute(async (req, res) => {
+  res.json(await shipmentService.listShipments());
+}));
+
+app.get('/api/shipments/tracking-number', requireAdmin, (req, res) => {
+  res.json({ trackingNumber: shipmentService.generateTrackingNumber() });
 });
 
 // Track a single shipment
-app.get('/api/track/:trackingNumber', async (req, res) => {
-  const { data, error } = await supabase
-    .from('shipments')
-    .select('*')
-    .eq('trackingNumber', req.params.trackingNumber)
-    .single();
-  if (error) return res.status(404).json({ error: 'Not found' });
-  res.json(data);
-});
+app.get('/api/track/:trackingNumber', rateLimit({ limit: 30, windowMs: 60_000 }), asyncRoute(async (req, res) => {
+  const trackingNumber = validation.trackingNumber(req.params.trackingNumber, true);
+  res.json(await shipmentService.getPublicShipment(trackingNumber));
+}));
 
 // Register a new shipment
-app.post('/api/shipments', async (req, res) => {
-  const newShipment = req.body;
-  
-  // Check if tracking number exists
-  const { data: existing } = await supabase
-    .from('shipments')
-    .select('trackingNumber')
-    .eq('trackingNumber', newShipment.trackingNumber)
-    .single();
-  
-  if (existing) {
-    return res.status(400).json({ error: 'Tracking number exists' });
-  }
-  
-  const { data, error } = await supabase
-    .from('shipments')
-    .insert([newShipment]);
-  
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ success: true });
-});
+app.post('/api/shipments', requireAdmin, asyncRoute(async (req, res) => {
+  const shipment = await shipmentService.createShipment(validation.shipmentInput(req.body));
+  res.status(201).json({ success: true, shipment });
+}));
 
 // Update shipment status
-app.put('/api/shipments/:trackingNumber', async (req, res) => {
-  const { status, currentLocation } = req.body;
-  const { data, error } = await supabase
-    .from('shipments')
-    .update({ 
-      status, 
-      currentLocation, 
-      lastUpdate: new Date().toLocaleString() 
-    })
-    .eq('trackingNumber', req.params.trackingNumber);
-  
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ success: true });
-});
+app.put('/api/shipments/:trackingNumber', requireAdmin, asyncRoute(async (req, res) => {
+  const trackingNumber = validation.trackingNumber(req.params.trackingNumber, true);
+  const shipment = await shipmentService.updateShipmentStatus(trackingNumber, validation.statusInput(req.body));
+  res.json({ success: true, shipment });
+}));
 
 // Delete a shipment
-app.delete('/api/shipments/:trackingNumber', async (req, res) => {
-  const { error } = await supabase
-    .from('shipments')
-    .delete()
-    .eq('trackingNumber', req.params.trackingNumber);
-  
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ success: true });
-});
+app.delete('/api/shipments/:trackingNumber', requireAdmin, asyncRoute(async (req, res) => {
+  const trackingNumber = validation.trackingNumber(req.params.trackingNumber, true);
+  await shipmentService.deleteShipment(trackingNumber);
+  res.status(204).end();
+}));
 
 // ==========================================
 // CHAT APIs
 // ==========================================
 
 // Get all conversations
-app.get('/api/conversations', async (req, res) => {
-  const { data, error } = await supabase
-    .from('messages')
-    .select('*')
-    .order('timestamp', { ascending: true });
-  
-  if (error) return res.status(500).json({ error: error.message });
-  
-  const conversations = {};
-  data.forEach(msg => {
-    const email = msg.customerEmail;
-    if (!email) return;
-    if (!conversations[email]) {
-      conversations[email] = { 
-        customerEmail: email, 
-        customerName: msg.customerName, 
-        messages: [] 
-      };
-    }
-    conversations[email].messages.push(msg);
-  });
-  
-  res.json(Object.values(conversations));
-});
+app.get('/api/conversations', requireAdmin, asyncRoute(async (req, res) => {
+  res.json(await messageService.listConversations());
+}));
 
 // Get messages for a specific customer
-app.get('/api/chat/:customerEmail', async (req, res) => {
-  const { data, error } = await supabase
-    .from('messages')
-    .select('*')
-    .eq('customerEmail', req.params.customerEmail)
-    .order('timestamp', { ascending: true });
-  
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
-});
+app.get('/api/chat/:customerEmail', requireAdmin, asyncRoute(async (req, res) => {
+  const customerEmail = validation.email(req.params.customerEmail, 'customerEmail', true);
+  res.json(await messageService.getMessages(customerEmail));
+}));
 
 // Customer sends a message
-app.post('/api/chat', async (req, res) => {
-  const { customerEmail, customerName, message } = req.body;
-  if (!customerEmail || !message) {
-    return res.status(400).json({ error: 'Email and message required' });
-  }
-  
-  const newMsg = {
-    from_user: 'customer',
-    customerName: customerName || 'Anonymous',
-    customerEmail,
-    message,
-    timestamp: new Date().toLocaleString(),
-    read: false,
-    replied: false,
-    replyDate: null,
-    adminName: null,
-  };
-  
-  const { error } = await supabase.from('messages').insert([newMsg]);
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ success: true });
-});
+app.post('/api/chat', rateLimit({ limit: 10, windowMs: 60_000 }), asyncRoute(async (req, res) => {
+  await messageService.createCustomerMessage({
+    customerEmail: validation.email(req.body?.customerEmail, 'customerEmail', true),
+    customerName: validation.text(req.body?.customerName || 'Customer', 'customerName'),
+    message: validation.text(req.body?.message, 'message', { max: 2000 }),
+  });
+  res.status(201).json({ success: true });
+}));
 
 // Admin replies to a customer
-app.post('/api/chat/reply', async (req, res) => {
-  const { customerEmail, replyMessage, adminName } = req.body;
-  if (!customerEmail || !replyMessage) {
-    return res.status(400).json({ error: 'Missing email or reply' });
-  }
-  
-  const newReply = {
-    from_user: 'admin',
-    adminName: adminName || 'Support Team',
-    customerEmail,
-    message: replyMessage,
-    timestamp: new Date().toLocaleString(),
-    read: true,
-    replied: true,
-    replyDate: new Date().toLocaleString(),
-    customerName: null,
-  };
-  
-  const { error } = await supabase.from('messages').insert([newReply]);
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ success: true });
-});
+app.post('/api/chat/reply', requireAdminOrBot, asyncRoute(async (req, res) => {
+  await messageService.createAdminReply({
+    customerEmail: validation.email(req.body?.customerEmail, 'customerEmail', true),
+    adminName: validation.text(req.body?.adminName || 'Support Team', 'adminName'),
+    message: validation.text(req.body?.replyMessage, 'replyMessage', { max: 2000 }),
+  });
+  res.status(201).json({ success: true });
+}));
 
 // Mark messages as read
-app.post('/api/chat/mark-read', async (req, res) => {
-  const { customerEmail } = req.body;
-  const { error } = await supabase
-    .from('messages')
-    .update({ read: true })
-    .eq('customerEmail', customerEmail)
-    .eq('from_user', 'admin');
-  
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ success: true });
-});
-
 // ==========================================
 // START SERVER
 // ==========================================
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
-  console.log(`📦 Admin Panel: http://0.0.0.0:${PORT}/admin.html`);
-  console.log(`🔍 Tracking: http://0.0.0.0:${PORT}/track.html`);
+app.use((error, req, res, next) => {
+  if (res.headersSent) return next(error);
+  if (error instanceof HttpError) {
+    return res.status(error.status).json({ error: error.message, code: error.code });
+  }
+  console.error(error);
+  return res.status(500).json({ error: 'Internal server error', code: 'INTERNAL_ERROR' });
 });
+
+if (require.main === module) {
+  app.listen(config.port, '0.0.0.0', () => {
+    console.log(`Server running at http://0.0.0.0:${config.port}`);
+  });
+}
+
+module.exports = app;

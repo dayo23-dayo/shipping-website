@@ -3,8 +3,9 @@ const axios = require('axios');
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const adminChatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+const internalApiKey = process.env.BOT_INTERNAL_API_KEY;
 
-if (!token || !adminChatId) {
+if (!token || !adminChatId || !internalApiKey) {
     console.error('❌ Missing Telegram environment variables');
     process.exit(1);
 }
@@ -52,6 +53,8 @@ bot.on('message', async (msg) => {
             customerEmail,
             replyMessage,
             adminName: 'Telegram Admin'
+        }, {
+            headers: { 'X-Internal-Api-Key': internalApiKey }
         });
         if (response.data.success) {
             await bot.sendMessage(adminChatId, '✅ Reply sent to customer.');

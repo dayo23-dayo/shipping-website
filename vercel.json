@@ -1,4 +1,6 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
   "functions": {
     "api/index.js": {
       "maxDuration": 10
@@ -6,16 +8,20 @@
   },
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js"
+      "src": "/admin",
+      "dest": "/api/index"
     },
     {
-      "src": "/(.*\\.(html|css|js|jpg|png|json))",
+      "src": "/api/(.*)",
+      "dest": "/api/index"
+    },
+    {
+      "src": "/(.*\\.(css|js|jpg|png))",
       "dest": "/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.js"
+      "dest": "/api/index"
     }
   ]
 }

@@ -63,12 +63,12 @@
             <div class="grand-total"><span>TOTAL:</span><span id="totalAmount">$0</span></div>
         </div>
     </div>
-    <div class="footer">Thank you for choosing Global Shipping Logistics<br>📧 globalshippinglogistics@gmail.com | 📱 WhatsApp: +18623603710</div>
+    <div class="footer">Thank you for choosing Global Shipping Logistics<br>Email: globalshipinglogistic@gmail.com | WhatsApp: +17125501810</div>
 </div>
 <div class="buttons"><button class="print-btn" onclick="window.print()">🖨️ PRINT RECEIPT</button><button class="close-btn" onclick="window.close()">CLOSE</button></div>
 <script>
     const p = new URLSearchParams(window.location.search);
-    document.getElementById('trackingNumber').innerText = p.get('tracking') || 'GSL000000';
+    document.getElementById('trackingNumber').innerText = p.get('tracking') || 'GSL-2026-AB12CD34';
     document.getElementById('receiverName').innerText = p.get('customerName') || '_________';
     document.getElementById('receiverAddress').innerText = p.get('customerAddress') || '_________';
     document.getElementById('receiverPhone').innerText = p.get('customerPhone') || '_________';

@@ -1,447 +1,94 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Track Your Cargo - Global Shipping Logistics</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f0f2f5;
-        }
-        .tracking-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        .tracking-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .tracking-header h1 {
-            font-size: 32px;
-            color: #1a1a2e;
-            margin-bottom: 10px;
-        }
-        .tracking-header p {
-            color: #666;
-        }
-        .search-box {
-            background: white;
-            border-radius: 60px;
-            padding: 5px;
-            display: flex;
-            max-width: 500px;
-            margin: 30px auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .search-box input {
-            flex: 1;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 60px;
-            font-size: 14px;
-            outline: none;
-        }
-        .search-box button {
-            background: #007bff;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 60px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .search-box button:hover {
-            background: #0056b3;
-        }
-        .sample-text {
-            text-align: center;
-            font-size: 12px;
-            color: #888;
-            margin-top: 10px;
-        }
-        .sample-text span {
-            color: #007bff;
-            cursor: pointer;
-        }
-        .tracking-result {
-            display: none;
-            margin-top: 40px;
-        }
-        /* Two column layout */
-        .two-columns {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-        .left-column {
-            flex: 1.5;
-            min-width: 300px;
-        }
-        .right-column {
-            flex: 1;
-            min-width: 280px;
-        }
-        /* Cards */
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .card h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #1a1a2e;
-            border-left: 4px solid #f5a623;
-            padding-left: 12px;
-        }
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        .status-item {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 12px;
-        }
-        .status-item .label {
-            font-size: 11px;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .status-item .value {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-            margin-top: 5px;
-        }
-        /* Delivery Progress */
-        .progress-steps {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-        }
-        .step .circle {
-            width: 40px;
-            height: 40px;
-            background: #e0e0e0;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 10px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #888;
-        }
-        .step.completed .circle {
-            background: #28a745;
-            color: white;
-        }
-        .step.active .circle {
-            background: #007bff;
-            color: white;
-        }
-        .step .step-label {
-            font-size: 11px;
-            color: #666;
-        }
-        .step.completed .step-label {
-            color: #28a745;
-            font-weight: 600;
-        }
-        /* Details rows */
-        .detail-row {
-            display: flex;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .detail-label {
-            width: 100px;
-            font-size: 13px;
-            color: #888;
-        }
-        .detail-value {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 500;
-            color: #333;
-        }
-        /* Timeline */
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-        .timeline-item {
-            position: relative;
-            padding-bottom: 20px;
-            border-left: 2px solid #e0e0e0;
-            padding-left: 20px;
-            margin-left: 10px;
-        }
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -8px;
-            top: 0;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ddd;
-        }
-        .timeline-item.completed::before {
-            background: #28a745;
-        }
-        .timeline-item.active::before {
-            background: #007bff;
-        }
-        .timeline-date {
-            font-size: 11px;
-            color: #888;
-            margin-bottom: 4px;
-        }
-        .timeline-title {
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .whatsapp-chat {
-            background: #25D366;
-            color: white;
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-weight: 600;
-            margin-top: 15px;
-        }
-        .whatsapp-chat i {
-            margin-right: 8px;
-        }
-        footer {
-            background: #1a1a2e;
-            color: white;
-            text-align: center;
-            padding: 30px;
-            margin-top: 40px;
-        }
-        @media (max-width: 768px) {
-            .two-columns {
-                flex-direction: column;
-            }
-            .progress-steps {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Track your Global Shipping Logistics delivery and view its latest status updates.">
+    <title>Track Shipment | Global Shipping Logistics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="track.css">
 </head>
 <body>
-    <nav>
-        <div class="logo">
-    <img src="logo.png" alt="Global Shipping Logistics" style="height: 50px; width: auto;">
-</div>
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="track.html">Track Shipment</a></li>
-        </ul>
-    </nav>
+    <header class="site-header">
+        <a class="brand" href="/" aria-label="Global Shipping Logistics home">
+            <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M4 8.5 14 3l10 5.5v11L14 25 4 19.5v-11Z"/><path d="m4.5 8.8 9.5 5.3 9.5-5.3M14 14v10.3"/></svg></span>
+            <span>Global Shipping <strong>Logistics</strong></span>
+        </a>
+        <nav aria-label="Primary navigation"><a href="/">Home</a><a href="/#services">Services</a><a href="/#contact">Contact</a><a class="active" href="/track">Track shipment</a></nav>
+    </header>
 
-    <div class="tracking-container">
-        <div class="tracking-header">
-            <h1>Track Your Cargo in Real Time</h1>
-            <p>Enter your tracking number to view current shipment status, delivery progress, movement history, and estimated delivery.</p>
-        </div>
+    <main>
+        <section class="tracking-hero">
+            <div class="container hero-content">
+                <span class="eyebrow">Shipment visibility</span>
+                <h1>Track your shipment</h1>
+                <p>Enter your tracking number to see the latest location, delivery status and journey history.</p>
+                <form id="trackingForm" class="tracking-form">
+                    <label class="sr-only" for="trackingNumber">Tracking number</label>
+                    <input id="trackingNumber" name="tracking" type="text" placeholder="GSL-2026-AB12CD34" autocomplete="off" required>
+                    <button type="submit">Track shipment</button>
+                </form>
+                <span class="format-note">Tracking number format: GSL-2026-AB12CD34</span>
+            </div>
+        </section>
 
-        <div class="search-box">
-            <input type="text" id="trackingNumber" placeholder="Enter tracking number (e.g., GSL2605241234)">
-            <button onclick="trackShipment()">Track <i class="fas fa-search"></i></button>
-        </div>
-        <div class="sample-text">
-    Sample tracking number: <span onclick="document.getElementById('trackingNumber').value='GSL-2026-000019'; trackShipment();">GSL-2026-000019</span>
-</div>
+        <section class="results-section" aria-live="polite">
+            <div id="emptyState" class="container empty-state">
+                <div class="empty-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 10 16 4l11 6v12l-11 6-11-6V10Z"/><path d="m5 10 11 6 11-6M16 16v12"/></svg></div>
+                <h2>Your shipment details will appear here</h2>
+                <p>Use the tracking number supplied on your receipt or shipping confirmation.</p>
+            </div>
 
-        <div id="trackingResult" class="tracking-result">
-            <div class="two-columns">
-                <!-- LEFT COLUMN -->
-                <div class="left-column">
-                    <!-- Current Shipment Status -->
-                    <div class="card">
-                        <h3>Current Shipment Status</h3>
-                        <div class="status-grid" id="currentStatus">
-                            <div class="status-item"><div class="label">ORIGIN</div><div class="value" id="origin">-</div></div>
-                            <div class="status-item"><div class="label">DESTINATION</div><div class="value" id="destination">-</div></div>
-                            <div class="status-item"><div class="label">CURRENT LOCATION</div><div class="value" id="currentLocation">-</div></div>
-                            <div class="status-item"><div class="label">LAST UPDATE</div><div class="value" id="lastUpdate">-</div></div>
-                            <div class="status-item"><div class="label">STATUS</div><div class="value" id="shipmentStatus">-</div></div>
-                            <div class="status-item"><div class="label">ESTIMATED DELIVERY</div><div class="value" id="estimatedDelivery">-</div></div>
-                        </div>
-                    </div>
+            <div id="errorState" class="container state-message" hidden>
+                <strong>Shipment not found</strong>
+                <p>Check the tracking number and try again. If you still need help, contact our support team.</p>
+            </div>
 
-                    <!-- Delivery Progress -->
-                    <div class="card">
-                        <h3>Delivery Progress</h3>
-                        <div class="progress-steps" id="deliveryProgress">
-                            <div class="step"><div class="circle">1</div><div class="step-label">Processing</div></div>
-                            <div class="step"><div class="circle">2</div><div class="step-label">In Transit</div></div>
-                            <div class="step"><div class="circle">3</div><div class="step-label">On Hold</div></div>
-                            <div class="step"><div class="circle">4</div><div class="step-label">Delivering</div></div>
-                            <div class="step"><div class="circle">5</div><div class="step-label">Delivered</div></div>
-                        </div>
-                    </div>
-
-                    <!-- Shipment Timeline -->
-                    <div class="card">
-                        <h3>Shipment Timeline</h3>
-                        <div class="timeline" id="timeline">
-                            <div class="timeline-item"><div class="timeline-date">-</div><div class="timeline-title">-</div></div>
-                        </div>
-                    </div>
+            <div id="trackingResult" class="container tracking-result" hidden>
+                <div class="result-header">
+                    <div><span>Tracking number</span><strong id="resultTrackingNumber">—</strong></div>
+                    <span id="shipmentStatus" class="status-badge">Processing</span>
                 </div>
 
-                <!-- RIGHT COLUMN -->
-                <div class="right-column">
-                    <!-- Sender Details -->
-                    <div class="card">
-                        <h3>Sender Details</h3>
-                        <div id="senderDetails">
-                            <div class="detail-row"><div class="detail-label">Name:</div><div class="detail-value">-</div></div>
-                            <div class="detail-row"><div class="detail-label">Address:</div><div class="detail-value">-</div></div>
-                            <div class="detail-row"><div class="detail-label">Location:</div><div class="detail-value">-</div></div>
-                            <div class="detail-row"><div class="detail-label">Phone:</div><div class="detail-value">-</div></div>
-                            <div class="detail-row"><div class="detail-label">Email:</div><div class="detail-value">-</div></div>
-                        </div>
-                    </div>
+                <div class="route-card">
+                    <div class="route-point"><span>Origin</span><strong id="origin">—</strong></div>
+                    <div class="route-line" aria-hidden="true"><span></span></div>
+                    <div class="route-point destination"><span>Destination</span><strong id="destination">—</strong></div>
+                </div>
 
-                    <!-- Receiver Details -->
-                    <div class="card">
-                        <h3>Receiver Details</h3>
-                        <div id="receiverDetails">
-                            <div class="detail-row"><div class="detail-label">Name:</div><div class="detail-value">-</div></div>
-                            <div class="detail-row"><div class="detail-label">Address:</div><div class="detail-value">-</div></div>
-                            <div class="detail-row"><div class="detail-label">Location:</div><div class="detail-value">-</div></div>
-                            <div class="detail-row"><div class="detail-label">Phone:</div><div class="detail-value">-</div></div>
-                            <div class="detail-row"><div class="detail-label">Email:</div><div class="detail-value">-</div></div>
-                        </div>
-                    </div>
+                <div class="detail-grid">
+                    <article><span>Current location</span><strong id="currentLocation">—</strong></article>
+                    <article><span>Estimated delivery</span><strong id="estimatedDelivery">—</strong></article>
+                    <article><span>Service</span><strong id="serviceLevel">—</strong></article>
+                    <article><span>Last updated</span><strong id="lastUpdate">—</strong></article>
+                </div>
 
-                    <!-- Customer Care -->
-                    <div class="card">
-                        <h3>Customer Care</h3>
-                        <a href="https://wa.me/17125501810" class="whatsapp-chat" target="_blank">
-                            <i class="fab fa-whatsapp"></i> Chat on WhatsApp
-                        </a>
-                        <p style="margin-top: 15px; font-size: 12px; color: #666;">
-                            📧 globalshipinglogistic@gmail.com
-                        </p>
-                    </div>
+                <div class="journey-layout">
+                    <section class="timeline-panel">
+                        <div class="section-title"><span>Shipment journey</span><h2>Tracking history</h2></div>
+                        <ol id="timeline" class="timeline"></ol>
+                    </section>
+                    <aside class="delivery-panel">
+                        <span>Delivery details</span>
+                        <dl>
+                            <div><dt>Recipient</dt><dd id="recipientName">—</dd></div>
+                            <div><dt>Package</dt><dd id="packageDescription">—</dd></div>
+                            <div><dt>Destination country</dt><dd id="destinationCountry">—</dd></div>
+                        </dl>
+                        <p>Personal contact and address details are protected for your security.</p>
+                    </aside>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <footer>
-        <p>📧 globalshippinglogistics@gmail.com | 📱 WhatsApp: +17125501810</p>
-        <p>© 2025 Global Shipping Logistics - All Rights Reserved</p>
-    </footer>
+        <section class="support-strip">
+            <div class="container"><div><span>Need assistance?</span><strong>Our support team can help with your delivery.</strong></div><a href="mailto:globalshipinglogistic@gmail.com">Email support</a></div>
+        </section>
+    </main>
 
-    <script src="script.js"></script>
-    <script>
-        // Override or extend the trackShipment function for this page
-        async function trackShipment() {
-            const trackingNumber = document.getElementById('trackingNumber').value;
-            const resultDiv = document.getElementById('trackingResult');
-            if (!trackingNumber) { alert('Enter tracking number'); return; }
-            
-            try {
-                const response = await fetch(`/api/track/${trackingNumber}`);
-                if (response.status === 404) {
-                    resultDiv.style.display = 'block';
-                    document.getElementById('origin').innerHTML = 'Not found';
-                    return;
-                }
-                const data = await response.json();
-                
-                // Display the result container
-                resultDiv.style.display = 'block';
-                
-                // Update Current Shipment Status
-                document.getElementById('origin').innerHTML = data.origin || data.country || 'N/A';
-                document.getElementById('destination').innerHTML = data.destination || data.address || 'N/A';
-                document.getElementById('currentLocation').innerHTML = data.currentLocation || 'N/A';
-                document.getElementById('lastUpdate').innerHTML = data.lastUpdate || 'N/A';
-                document.getElementById('shipmentStatus').innerHTML = data.status || 'Processing';
-                document.getElementById('estimatedDelivery').innerHTML = data.estimatedDelivery || 'N/A';
-                
-                // Update Delivery Progress Steps
-                const steps = ['Processing', 'In Transit', 'On Hold', 'Delivering', 'Delivered'];
-                const currentStepIndex = steps.indexOf(data.status);
-                const stepElements = document.querySelectorAll('.step');
-                stepElements.forEach((step, index) => {
-                    step.classList.remove('completed', 'active');
-                    if (index < currentStepIndex) step.classList.add('completed');
-                    else if (index === currentStepIndex) step.classList.add('active');
-                });
-                
-                // Update Seller Details (Sender)
-                document.querySelectorAll('#senderDetails .detail-value')[0].innerHTML = data.senderName || 'N/A';
-                document.querySelectorAll('#senderDetails .detail-value')[1].innerHTML = data.senderAddress || 'N/A';
-                document.querySelectorAll('#senderDetails .detail-value')[2].innerHTML = data.senderAddress || data.country || 'N/A';
-                document.querySelectorAll('#senderDetails .detail-value')[3].innerHTML = data.senderPhone || 'N/A';
-                document.querySelectorAll('#senderDetails .detail-value')[4].innerHTML = data.senderEmail || 'N/A';
-                
-                // Update Receiver Details (Customer)
-                document.querySelectorAll('#receiverDetails .detail-value')[0].innerHTML = data.customerName || 'N/A';
-                document.querySelectorAll('#receiverDetails .detail-value')[1].innerHTML = data.address || 'N/A';
-                document.querySelectorAll('#receiverDetails .detail-value')[2].innerHTML = data.address || data.country || 'N/A';
-                document.querySelectorAll('#receiverDetails .detail-value')[3].innerHTML = data.customerPhone || 'N/A';
-                document.querySelectorAll('#receiverDetails .detail-value')[4].innerHTML = data.customerEmail || 'N/A';
-                
-                // Update Timeline (mock timeline based on status)
-                const timelineContainer = document.getElementById('timeline');
-                const timelineEvents = [
-                    { title: 'Order Created', location: data.origin || data.country || 'Origin' },
-                    { title: 'Processing at Origin', location: data.currentLocation || 'Warehouse' },
-                    { title: 'In Transit', location: 'In Route' },
-                    { title: 'Arrived at Destination', location: data.destination || data.address || 'Destination' },
-                    { title: 'Out for Delivery', location: 'Local Facility' },
-                    { title: 'Delivered', location: data.address || 'Customer Address' }
-                ];
-                const activeIndex = currentStepIndex + 1;
-                timelineContainer.innerHTML = timelineEvents.map((event, idx) => `
-                    <div class="timeline-item ${idx < activeIndex ? 'completed' : ''} ${idx === activeIndex - 1 && data.status !== 'Delivered' ? 'active' : ''}">
-                        <div class="timeline-date">${idx < activeIndex ? 'Completed' : 'Pending'}</div>
-                        <div class="timeline-title">${event.title}</div>
-                        <div style="font-size: 12px; color: #888;">${event.location}</div>
-                    </div>
-                `).join('');
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error tracking shipment');
-            }
-        }
-    </script>
+    <footer><div class="container"><span>© 2026 Global Shipping Logistics</span><a href="mailto:globalshipinglogistic@gmail.com">globalshipinglogistic@gmail.com</a></div></footer>
+    <script src="track.js"></script>
 </body>
 </html>
