@@ -13,8 +13,7 @@
 <body>
     <header class="site-header">
         <a class="brand" href="/" aria-label="Global Shipping Logistics home">
-            <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M4 8.5 14 3l10 5.5v11L14 25 4 19.5v-11Z"/><path d="m4.5 8.8 9.5 5.3 9.5-5.3M14 14v10.3"/></svg></span>
-            <span>Global Shipping <strong>Logistics</strong></span>
+            <img class="brand-logo" src="/logo.png" alt="Global Shipping Logistics">
         </a>
         <nav aria-label="Primary navigation"><a href="/">Home</a><a href="/#services">Services</a><a href="/#contact">Contact</a><a class="active" href="/track">Track shipment</a></nav>
     </header>
@@ -88,7 +87,22 @@
         </section>
     </main>
 
-    <footer><div class="container"><span>© 2026 Global Shipping Logistics</span><a href="mailto:globalshipinglogistic@gmail.com">globalshipinglogistic@gmail.com</a></div></footer>
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a class="brand brand-light" href="/">
+                    <img class="brand-logo footer-logo" src="/logo.png" alt="Global Shipping Logistics">
+                </a>
+                <p>International logistics with clear communication and dependable shipment visibility.</p>
+            </div>
+            <div><h3>Explore</h3><a href="/#services">Services</a><a href="/#process">How it works</a><a href="/track">Track shipment</a></div>
+            <div><h3>Contact</h3><a href="mailto:globalshipinglogistic@gmail.com">globalshipinglogistic@gmail.com</a><a href="https://wa.me/17125501810">+1 712 550 1810</a></div>
+        </div>
+        <div class="container footer-bottom"><span>© 2026 Global Shipping Logistics</span><span>Washington, DC · Worldwide delivery</span></div>
+    </footer>
+    <a class="whatsapp-float" href="https://wa.me/17125501810" target="_blank" rel="noopener noreferrer" aria-label="Chat with Global Shipping Logistics on WhatsApp">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3a12.8 12.8 0 0 0-11 19.35L3.2 29l6.82-1.79A12.87 12.87 0 1 0 16 3Zm0 23.37c-1.86 0-3.68-.5-5.27-1.44l-.38-.23-4.05 1.06 1.08-3.95-.25-.4A10.36 10.36 0 1 1 16 26.37Zm5.68-7.76c-.31-.16-1.84-.91-2.13-1.01-.28-.11-.49-.16-.7.15-.2.31-.8 1.01-.98 1.22-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.49-1.54a9.26 9.26 0 0 1-1.72-2.14c-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.15-.18.2-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.7-1.69-.96-2.31-.25-.61-.51-.53-.7-.54h-.59c-.21 0-.54.08-.83.39-.28.31-1.09 1.07-1.09 2.6s1.12 3.02 1.27 3.23c.16.21 2.2 3.36 5.33 4.71.74.32 1.33.51 1.78.66.75.24 1.43.2 1.97.12.6-.09 1.84-.75 2.1-1.48.26-.73.26-1.35.18-1.48-.08-.13-.29-.21-.6-.36Z"/></svg>
+    </a>
     <script src="track.js"></script>
 </body>
 </html>

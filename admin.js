@@ -4,6 +4,15 @@ const adminTabs = {
     chats: document.getElementById('chatsTab'),
     all: document.getElementById('allTab'),
 };
+const adminSidebar = document.querySelector('.admin-sidebar');
+const adminMenuToggle = document.getElementById('adminMenuToggle');
+
+adminMenuToggle?.addEventListener('click', () => {
+    const isOpen = adminMenuToggle.getAttribute('aria-expanded') === 'true';
+    adminMenuToggle.setAttribute('aria-expanded', String(!isOpen));
+    adminMenuToggle.setAttribute('aria-label', isOpen ? 'Open admin menu' : 'Close admin menu');
+    adminSidebar.classList.toggle('menu-open', !isOpen);
+});
 
 document.querySelectorAll('.tab-btn').forEach((button) => {
     button.addEventListener('click', () => {
@@ -14,6 +23,8 @@ document.querySelectorAll('.tab-btn').forEach((button) => {
         adminTabs[selectedTab].style.display = 'block';
         if (selectedTab === 'chats') loadConversations();
         if (selectedTab === 'all') loadShipments();
+        adminSidebar.classList.remove('menu-open');
+        adminMenuToggle?.setAttribute('aria-expanded', 'false');
     });
 });
 

@@ -13,13 +13,15 @@
             background-size: cover;
             background-position: center;
             min-height: 100vh;
+            min-height: 100svh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
         .login-card {
-            background: white;
+            background: #fff;
+            opacity: 1;
             border-radius: 24px;
             padding: 40px;
             max-width: 400px;
@@ -27,6 +29,7 @@
             box-shadow: 0 20px 35px rgba(0,0,0,0.2);
             text-align: center;
         }
+        .login-logo { width: 210px; max-width: 80%; margin: 0 auto 22px; }
         h2 { margin-bottom: 10px; color: #1a1a2e; }
         p { color: #666; font-size: 14px; margin-bottom: 25px; }
         input {
@@ -67,11 +70,20 @@
         }
         button:hover { background: #0056b3; }
         .error { color: #dc3545; margin-top: 15px; font-size: 14px; }
+        @media (max-width: 480px) {
+            html, body { width: 100%; overflow-x: hidden; }
+            body { padding: 14px; background: #071426; }
+            .login-card { width: 100%; max-width: 380px; padding: 30px 22px; background: #fff; border-radius: 16px; box-shadow: none; }
+            h2 { font-size: 22px; }
+            input { min-width: 0; font-size: 16px; }
+            button { min-height: 48px; }
+        }
     </style>
 </head>
 <body>
     <div class="login-card">
-        <h2>🔐 Admin Access</h2>
+        <img class="login-logo" src="/logo.png" alt="Global Shipping Logistics">
+        <h2>Admin Access</h2>
         <p>Enter the admin password to continue</p>
         <form id="loginForm">
             <div class="password-field">

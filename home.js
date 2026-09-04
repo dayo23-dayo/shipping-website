@@ -2,19 +2,19 @@ const menuButton = document.querySelector('.menu-toggle');
 const navigation = document.getElementById('primary-nav');
 const chatModal = document.getElementById('chatModal');
 
+const closeMenu = () => {
+    menuButton?.setAttribute('aria-expanded', 'false');
+    navigation?.classList.remove('open');
+};
+
 menuButton?.addEventListener('click', () => {
     const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
     menuButton.setAttribute('aria-expanded', String(!isOpen));
     navigation?.classList.toggle('open', !isOpen);
-    document.body.classList.toggle('menu-open', !isOpen);
 });
 
 navigation?.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-        menuButton?.setAttribute('aria-expanded', 'false');
-        navigation.classList.remove('open');
-        document.body.classList.remove('menu-open');
-    });
+    link.addEventListener('click', closeMenu);
 });
 
 const setChatVisibility = (isVisible) => {
@@ -29,5 +29,8 @@ chatModal?.addEventListener('click', (event) => {
     if (event.target === chatModal) setChatVisibility(false);
 });
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') setChatVisibility(false);
+    if (event.key === 'Escape') {
+        closeMenu();
+        setChatVisibility(false);
+    }
 });

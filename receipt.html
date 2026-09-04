@@ -31,6 +31,17 @@
         .print-btn { background: #1a1a2e; color: white; }
         .print-btn:hover { background: #f5a623; color: #1a1a2e; }
         .close-btn { background: #e0e0e0; color: #333; }
+        @media (max-width: 520px) {
+            body { padding: 16px 10px; justify-content: flex-start; }
+            .receipt { border-radius: 14px; }
+            .header { padding: 24px 14px; }
+            .header h1 { font-size: 23px; }
+            .content { padding: 18px 16px; }
+            .tracking-row { flex-direction: column; gap: 5px; }
+            .row { gap: 16px; align-items: flex-start; }
+            .row .value { max-width: 58%; text-align: right; overflow-wrap: anywhere; }
+            .buttons { width: 100%; padding: 12px 0 0; flex-direction: column; }
+        }
         @media print { body { background: white; } .buttons { display: none; } .receipt { box-shadow: none; } }
     </style>
 </head>
